@@ -1,0 +1,6 @@
+[submodule "database"]
+	path = database
+	url = https://github.com/leihs/leihs_database.git
+[submodule "vendor"]
+	path = vendor
+	url = https://github.com/leihs/leihs-admin_vendor.git
