@@ -37,6 +37,27 @@ Minified css saves only about 10% of the size. We deemed that not worth to mess
 with it. In production mode effective caching is enabled.
 
 
+Building and Testing
+--------------------
+
+## Build
+
+    lein do clean, uberjar
+
+
+## Testing
+
+1. build the application `lein do clean, uberjar`
+2. start the application `java -jar target/leihs-admin.jar run -s secret`
+3. run specs in a second terminal `bundle exec rspec spec/`
+
+
+## CI
+
+This is not possible yet. It seems that the openjdk 9 on ubuntu 16.04 is outdated.
+
+
+
 Identified Problems
 -------------------
 

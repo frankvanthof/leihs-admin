@@ -1,4 +1,4 @@
-(defproject leihs-permissions "0.1.0-SNAPSHOT"
+(defproject leihs-admin "0.0.0-beta"
   :description "FIXME: write description"
   :url "http://example.com/FIXME"
   :license {:name "Eclipse Public License"
@@ -9,7 +9,7 @@
    [bidi "2.1.2"]
    [camel-snake-kebab "0.4.0"]
    [cheshire "5.8.0"]
-   [cider-ci/open-session "2.0.0"]
+   [cider-ci/open-session "2.0.0-beta.1"]
    [clj-http "3.7.0"]
    [cljs-http "0.1.44"]
    [cljsjs/jimp "0.2.27"]

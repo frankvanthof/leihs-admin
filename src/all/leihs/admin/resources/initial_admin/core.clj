@@ -9,6 +9,7 @@
 
     [clojure.java.jdbc :as jdbc]
     [compojure.core :as cpj]
+    [ring.util.response :refer [redirect]]
 
     [clojure.tools.logging :as logging]
     [logbug.debug :as debug])
@@ -16,27 +17,43 @@
     [java.util UUID]
     ))
 
+(defn some-admin? [tx]
+  (->> ["SELECT true AS has_admin FROM users WHERE is_admin = true"]
+       (jdbc/query tx ) first :has_admin boolean))
+
 (defn prepare-data [data]
   (-> data
-      (select-keys [:firstname :lastname :login :email])
-      (assoc :pw_hash (password-hash (:password data) @ds)
+      (select-keys [:email])
+      (assoc :is_admin true
+             :pw_hash (password-hash (:password data) @ds)
              :id (UUID/randomUUID))))
 
 (defn insert-user [data tx]
   (first (jdbc/insert! tx :users data)))
 
 (defn create-initial-admin
-  ([{tx :tx data :body}]
-   (create-initial-admin data tx))
+  ([{tx :tx form-params :form-params data :body}]
+   (create-initial-admin (if (empty? form-params)
+                           data form-params) tx))
   ([data tx]
-   (if-let [user (-> data prepare-data (insert-user tx))]
-     {:status 201
-      :body (select-keys user [:id])}
-     {:status 422})))
+   (if (some-admin? tx)
+     {:status 403
+      :body "A admin user already exists!"}
+     (when-let [user (-> data prepare-data (insert-user tx))]
+       (redirect (path :admin) :see-other)))))
 
 (def routes
   (cpj/routes
     (cpj/POST (path :initial-admin) [] create-initial-admin)))
+
+(defn wrap
+  ([handler] (fn [request] (wrap handler request)))
+  ([handler request]
+   (if (or (not= (-> request :accept :mime) :html)
+           (= (:handler-key request) :initial-admin)
+           (some-admin? (:tx request)))
+     (handler request)
+     (redirect (path :initial-admin) :see-other))))
 
 ;#### debug ###################################################################
 ;(logging-config/set-logger! :level :debug)

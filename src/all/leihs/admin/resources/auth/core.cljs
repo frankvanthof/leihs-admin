@@ -67,7 +67,7 @@
     [:div.form-group.float-right
      [:button.btn.btn-primary
       {:type :submit}
-      [:i.fas.fa-sign-in-alt] " Sign-in"]]]
+      [:i.fas.fa-sign-in-alt] " Sign in"]]]
    [:div.clearfix]])
 
 (defn password-sign-in-page []

@@ -4,10 +4,13 @@
     [reagent.ratom :as ratom :refer [reaction]])
   (:require
     [leihs.admin.utils.core :refer [keyword str presence]]
-    [timothypratley.patchin :as patchin]
+    [leihs.admin.front.dom :as dom]
 
     [clojure.pprint :refer [pprint]]
-    [reagent.core :as reagent]))
+    [reagent.core :as reagent]
+    [timothypratley.patchin :as patchin]
+
+    ))
 
 (defonce routing-state* (reagent/atom {:debug true}))
 
@@ -46,15 +49,8 @@
 (js/setInterval #(swap! global-state*
                        (fn [s] (merge s {:timestamp (js/moment)}))) 1000)
 
-(def user*
-  (atom
-    (let [user (js->clj
-                 (.parse js/JSON
-                         (->  js/document .-body .-dataset .-user)))]
-      (if (map? user)
-        (clojure.walk/keywordize-keys user)
-        nil))))
 
+(def user* (atom (dom/data-attribute "body" "user")))
 
 (def debug?* (reaction (:debug @global-state*)))
 

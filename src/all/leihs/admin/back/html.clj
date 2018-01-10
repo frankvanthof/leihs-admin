@@ -6,6 +6,7 @@
     [leihs.admin.resources.user.back :as user]
     [leihs.admin.utils.http-resources-cache-buster :as cache-buster :refer [wrap-resource]]
     [leihs.admin.utils.json-protocol :refer [to-json]]
+    [leihs.admin.utils.url.core :as url]
 
     [clojure.java.jdbc :as jdbc]
     [hiccup.page :refer [include-js html5]]
@@ -34,10 +35,11 @@
    (include-font-css)])
 
 (defn user-data [request]
-  (to-json
-    (when-let [user-id (-> request :authenticated-entity :user_id)]
-      (->> (user/user-query user-id)
-           (jdbc/query (:tx request)) first))))
+  (url/encode
+    (to-json
+      (when-let [user-id (-> request :authenticated-entity :user_id)]
+        (->> (user/user-query user-id)
+             (jdbc/query (:tx request)) first)))))
 
 (defn not-found-handler [request]
   {:status 404

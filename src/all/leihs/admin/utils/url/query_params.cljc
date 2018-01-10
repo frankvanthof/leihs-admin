@@ -1,21 +1,14 @@
 (ns leihs.admin.utils.url.query-params
-  (:refer-clojure :exclude [str keyword encode])
+  (:refer-clojure :exclude [str keyword encode decode])
   (:require
     [leihs.admin.utils.core :refer [keyword str presence]]
 
     [clojure.walk :refer [keywordize-keys]]
     [clojure.string :as string]
+    [leihs.admin.utils.url.shared :as shared]
 
-    #?(:clj [ring.util.codec])
 
     ))
-
-(def decode #?(:cljs js/decodeURIComponent))
-
-(def encode
-  #?(
-     :cljs js/encodeURIComponent
-     :clj ring.util.codec/url-encode))
 
 (defn try-parse-json [x]
   #?(:cljs
@@ -32,15 +25,15 @@
        (reduce
          (fn [m part]
            (let [[k v] (string/split part #"=" 2)]
-             (assoc m (-> k decode keyword) (-> v decode try-parse-json))))
+             (assoc m (-> k shared/decode keyword) (-> v shared/decode try-parse-json))))
          {})
        keywordize-keys))
 
 (defn encode-query-params [params]
   (->> params
        (map (fn [[k v]]
-              (str (-> k str encode)
+              (str (-> k str shared/encode)
                    "="
                    (-> (if (coll? v) (to-json v) v)
-                       str encode))))
+                       str shared/encode))))
        (clojure.string/join "&")))

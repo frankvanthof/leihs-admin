@@ -11,6 +11,7 @@
     [leihs.admin.resources.api-tokens.back :as api-tokens]
     [leihs.admin.resources.auth.core :as auth]
     [leihs.admin.resources.initial-admin.core :as initial-admin]
+    [leihs.admin.resources.settings.back :as settings]
     [leihs.admin.resources.user.back :as user]
     [leihs.admin.resources.users.back :as users]
     [leihs.admin.utils.ds :as ds]
@@ -167,8 +168,6 @@
       dispatch-to-handler
       wrap-dispatch-to-html
       wrap-assert-handler
-      wrap-resolve-handler
-      wrap-accept
       ring.middleware.json/wrap-json-response
       (ring.middleware.json/wrap-json-body {:keywords? true})
       anti-csrf/wrap
@@ -177,7 +176,11 @@
       wrap-empty
       ring-exception/wrap
       (wrap-secret-byte-array secret)
+      initial-admin/wrap
+      settings/wrap
       ds/wrap-tx
+      wrap-accept
+      wrap-resolve-handler
       wrap-canonicalize-params-maps
       ring.middleware.params/wrap-params
       (wrap-resource

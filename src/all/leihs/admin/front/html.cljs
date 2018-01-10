@@ -42,19 +42,24 @@
       :type :hidden
       :value (-> @state/routing-state* :url)}]]
    [anti-csrf/hidden-form-group-token-component]
-   [:button.btn.btn-dark.form-group
-    {:style {:padding 7}
-     :type :submit}
-    [:i.fas.fa-sign-out-alt]]])
+   [:div.form-group
+    [:label.sr-only
+     {:for :sign-out}
+     "Sign out"]
+    [:button#sign-out.btn.btn-dark.form-group
+     {:style {:padding 7}
+      :type :submit}
+     [:i.fas.fa-sign-out-alt]]]])
 
 (defn navbar-user-nav []
   (if-let [user @state/user*]
-    [:div.navbar-nav
+    [:div.navbar-nav.user-nav
      [:div
       [:a
        {:href (path :user {:user-id (:id user)} {})}
-       [:img {:src (or (:img32_data_url user)
-                       (gravatar-url (:email user)))}]]]
+       [:img.user-img-32
+        {:src (or (:img32_data_url user)
+                  (gravatar-url (:email user)))}]]]
      [sign-out-nav-component]]
     [:div.navbar-nav]))
 
@@ -76,7 +81,8 @@
    [leihs.admin.front.requests.modal/modal-component]
    [nav-bar]
    [:div
-    (if-not @state/user*
+    (if-not (or @state/user*
+                (= :initial-admin (:handler-key @state/routing-state*)))
       [home-page]
       (if-let [page (:page @routing-state*)]
         [page]
