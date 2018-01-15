@@ -2,6 +2,7 @@ require 'active_support/all'
 require 'pry'
 
 require 'config/database'
+require 'config/factories'
 require 'config/web'
 require 'helpers/global'
 

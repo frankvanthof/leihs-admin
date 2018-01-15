@@ -31,7 +31,8 @@
    [:h2 "Sign in with password"]
    (when (-> @state/routing-state* :query-params :sign-in-warning)
      [:div.alert.alert-warning
-      [:p "Make sure that you the "
+      [:h3 "Attention"]
+      [:p "Make sure that you use the "
        [:b "correct email-address "]
        "and "
        [:b "the correct password. "]]

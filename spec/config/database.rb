@@ -1,3 +1,4 @@
+require 'addressable'
 require 'sequel'
 
 def database
