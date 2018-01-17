@@ -149,6 +149,13 @@
         (get-file-data data-transfer img-handler)
         (get-img-data data-transfer img-handler)))))
 
+
+(defn handle-img-chosen [evt]
+  (reset! img-processing* {})
+  (js/console.log evt)
+  (js/console.log (-> evt .-target .-files .-length))
+  (get-file-data (-> evt .-target) img-handler))
+
 (defn file-upload []
   [:div.box
    {:style {:position :relative}
@@ -160,13 +167,24 @@
      {:position :relative
       :width "256px"
       :height "256px"}}
-    [:div
-     [:span "drop file image here"]
-     (when (:img32_data_url @user-data*)
-       [:p {:style {:margin-top "1em"}}
-        [:button.btn.btn-sm.btn-dark
-         {:on-click #(swap! user-data* assoc :img256_data_url nil :img32_data_url nil)}
-         [:i.fas.fa-times] " Remove image "]])]]
+    [:div.pt-2
+     [:label.btn.btn-sm.btn-dark
+      [:i.fas.fa-file-image]
+      " Choose file "
+      [:input.sr-only
+       {:type :file
+        :on-change handle-img-chosen}]]
+     [:p "or drop file image here"]]
+    [:div.text-center
+     {:style {:position :absolute
+              :bottom 0
+              :width "100%"}}
+     [:div
+      (when (:img256_data_url @user-data*)
+        [:p {:style {:margin-top "1em"}}
+         [:button.btn.btn-sm.btn-dark
+          {:on-click #(swap! user-data* assoc :img256_data_url nil :img32_data_url nil)}
+          [:i.fas.fa-times] " Remove image "]])]]]
    (if-let [img-data (:img256_data_url @user-data*)]
            [:img {:src img-data
                   :style {:position :absolute
@@ -182,8 +200,7 @@
                      :top 0
                      :width "256px"
                      :height "256px"
-                     :z-index -1
-                     }}])])
+                     :z-index -1 }}])])
 
 (defn image-component []
   (if-not @edit-mode?*
