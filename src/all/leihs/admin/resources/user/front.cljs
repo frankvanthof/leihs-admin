@@ -171,7 +171,7 @@
      [:label.btn.btn-sm.btn-dark
       [:i.fas.fa-file-image]
       " Choose file "
-      [:input.sr-only
+      [:input#user-image.sr-only
        {:type :file
         :on-change handle-img-chosen}]]
      [:p "or drop file image here"]]
@@ -204,7 +204,7 @@
 
 (defn image-component []
   (if-not @edit-mode?*
-    [:img.bg-light
+    [:img.bg-light.user-image-256
      {:src (if-let [data (:img256_data_url @user-data*)]
              data
              (gravatar-url (:email @user-data*) 256))
@@ -253,7 +253,8 @@
   [:div.user-component
    (if (nil?  @user-data*)
      [:div.text-center
-      [:i.fas.fa-spinner.fa-spin.fa-5x]]
+      [:i.fas.fa-spinner.fa-spin.fa-5x]
+      [:span.sr-only "Please wait"]]
      [:div
       [:div.row.mt-4
        [:div.col-lg-4 [image-component]]

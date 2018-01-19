@@ -82,8 +82,8 @@
 
 (defn form-term-filter []
   [:div.form-group.ml-2.mr-2.mt-2
-   [:label.sr-only {:for :users-fiter-term} "Term"]
-   [:input#users-filter-term.form-control.mb-1.mr-sm-1.mb-sm-0
+   [:label.sr-only {:for :users-search-term} "Search term"]
+   [:input#users-search-term.form-control.mb-1.mr-sm-1.mb-sm-0
     {:type :text
      :placeholder "Search term ..."
      :value (or (-> @current-query-paramerters-normalized* :term presence) "")
@@ -208,7 +208,8 @@
 (defn users-table-component []
   (if-not (contains? @users* @current-query-paramerters-normalized*)
     [:div.text-center
-     [:i.fas.fa-spinner.fa-spin.fa-5x]]
+     [:i.fas.fa-spinner.fa-spin.fa-5x]
+     [:span.sr-only "Please wait"]]
     (if-let [users (-> @users* (get  @current-query-paramerters-normalized* []) seq)]
       [:table.table.table-striped.table-sm
        [users-thead-component]
