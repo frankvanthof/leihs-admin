@@ -17,6 +17,7 @@
     [cljs.core.async :as async]
     [cljs.core.async :refer [timeout]]
     [cljs.pprint :refer [pprint]]
+    [cljsjs.moment]
     [clojure.string :refer [join split]]
     [reagent.core :as reagent]
     ))

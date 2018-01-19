@@ -6,7 +6,7 @@
   :dependencies
   [
    [aleph "0.4.4"]
-   [bidi "2.1.2"]
+   [bidi "2.1.3"]
    [camel-snake-kebab "0.4.0"]
    [cheshire "5.8.0"]
    [cider-ci/open-session "2.0.0-beta.1"]
@@ -50,6 +50,7 @@
    ]
 
   :jvm-opts ["--add-modules" "java.xml.bind"]
+  :javac-options ["-target" "1.8" "-source" "1.8" "-Xlint:-options"]
 
   :source-paths ["src/all"]
   :resource-paths ["resources/all"]
@@ -69,7 +70,7 @@
                      :compiler
                      {:output-to "target/cljsbuild/public/admin/js/app.js"
                       :output-dir "target/uberjar"
-                      :optimizations :advanced
+                      :optimizations :simple
                       :pretty-print  false}}
                :app
                {:source-paths ["src/all" "src/dev"]

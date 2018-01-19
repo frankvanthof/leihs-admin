@@ -37,4 +37,7 @@ RSpec.configure do |config|
   config.before :each  do
     clean_db
   end
+  config.after :suite do
+    clean_db
+  end
 end

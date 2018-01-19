@@ -49,7 +49,8 @@
     [:button#sign-out.btn.btn-dark.form-group
      {:style {:padding 7}
       :type :submit}
-     [:i.fas.fa-sign-out-alt]]]])
+     [:i.fas.fa-sign-out-alt]
+     [:span.sr-only "Sign out"]]]])
 
 (defn navbar-user-nav []
   (if-let [user @state/user*]
@@ -57,9 +58,11 @@
      [:div
       [:a
        {:href (path :user {:user-id (:id user)} {})}
-       [:img.user-img-32
-        {:src (or (:img32_data_url user)
-                  (gravatar-url (:email user)))}]]]
+       [:span
+        [:img.user-img-32
+         {:src (or (:img32_data_url user)
+                   (gravatar-url (:email user)))}]
+        [:span.sr-only (:email user)]]]]
      [sign-out-nav-component]]
     [:div.navbar-nav]))
 

@@ -19,17 +19,18 @@ feature 'Initial admin', type: :feature do
     click_on 'Sign in'
 
     # we are signed-in
-    expect(first('.user-nav img.user-img-32')).to be
+    expect(page).to have_content 'admin@example.com'
 
     # the authentication method is session
     visit '/auth'
 
     wait_until {page.has_content? /authentication-method.+session/}
 
-    find("#sign-out").click
+    click_on 'Sign out'
 
     # we are signed-out
-    expect(first('.user-nav img.user-img-32')).not_to be
+    expect(page).not_to have_content 'admin@example.com'
+
 
   end
 end

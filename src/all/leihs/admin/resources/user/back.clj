@@ -38,6 +38,7 @@
    :login
    :phone
    :sign_in_enabled
+   :password_sign_in_enabled
    :updated_at
    :zip
    [:unique_id :org_id]
@@ -62,7 +63,7 @@
    :org_id
    :phone
    :sign_in_enabled
-   :updated_at
+   :password_sign_in_enabled
    :pw_hash
    :zip])
 

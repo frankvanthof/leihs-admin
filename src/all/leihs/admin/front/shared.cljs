@@ -5,6 +5,7 @@
     [leihs.admin.utils.core :refer [keyword str presence]]
     [leihs.admin.utils.digest]
 
+    [cljsjs.moment]
     [goog.string :as gstring]))
 
 (defn humanize-datetime [ref_dt dt]

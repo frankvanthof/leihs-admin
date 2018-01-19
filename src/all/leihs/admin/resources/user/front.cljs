@@ -17,6 +17,7 @@
     [cljs.core.async :refer [timeout]]
     [cljs.pprint :refer [pprint]]
     [cljsjs.jimp]
+    [cljsjs.moment]
     [clojure.contrib.inflect :refer [pluralize-noun]]
     [reagent.core :as reagent]
     ))
@@ -201,6 +202,7 @@
   [:div.form.mt-2
    [checkbox-component :is_admin]
    [checkbox-component :sign_in_enabled]
+   [checkbox-component :password_sign_in_enabled]
    [field-component :firstname]
    [field-component :lastname]
    [field-component :phone]
@@ -232,7 +234,7 @@
 
 (defn user-component []
   [:div.user-component
-   (if-not @user-data*
+   (if (nil?  @user-data*)
      [:div.text-center
       [:i.fas.fa-spinner.fa-spin.fa-5x]]
      [:div
@@ -357,7 +359,8 @@
 (defn new-page []
   [:div.new-user
    [state/hidden-routing-state-component
-    {:will-mount #(reset! user-data* {:sign_in_enabled true})}]
+    {:will-mount #(reset! user-data* {:sign_in_enabled true
+                                      :password_sign_in_enabled true})}]
    (breadcrumbs/nav-component
      [(breadcrumbs/leihs-li)
       (breadcrumbs/admin-li)
