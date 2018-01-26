@@ -12,6 +12,8 @@
     [leihs.admin.resources.auth.core :as auth]
     [leihs.admin.resources.initial-admin.core :as initial-admin]
     [leihs.admin.resources.settings.back :as settings]
+    [leihs.admin.resources.shutdown.back :as shutdown]
+    [leihs.admin.resources.status.back :as status]
     [leihs.admin.resources.user.back :as user]
     [leihs.admin.resources.users.back :as users]
     [leihs.admin.utils.ds :as ds]
@@ -60,6 +62,8 @@
    :redirect-to-root redirect-to-root-handler
    :request html/html-handler
    :requests html/html-handler
+   :status status/routes
+   :shutdown shutdown/routes
    :user user/routes
    :user-delete html/html-handler
    :user-edit html/html-handler

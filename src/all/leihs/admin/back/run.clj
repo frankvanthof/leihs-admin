@@ -42,6 +42,15 @@
   (or (-> (System/getenv) (get (str kw) nil) presence)
       (get defaults kw nil)))
 
+(defn extend-pg-params [params]
+  (assoc params
+         :password (or (:password params)
+                       (System/getenv "PGPASSWORD"))
+         :username (or (:username params)
+                       (System/getenv "PGUSER"))
+         :port (or (:port params)
+                   (System/getenv "PGPORT"))))
+
 (def cli-options
   [["-h" "--help"]
    ["-b" "--http-base-url LEIHS_HTTP_BASE_URL"
@@ -50,8 +59,9 @@
     :parse-fn http-url/parse-base-url]
    ["-d" "--database-url LEIHS_DATABASE_URL"
     (str "default: " (:LEIHS_DATABASE_URL defaults))
-    :default (jdbc-url/dissect (env-or-default :LEIHS_DATABASE_URL))
-    :parse-fn jdbc-url/dissect]
+    :default (-> (env-or-default :LEIHS_DATABASE_URL)
+                 jdbc-url/dissect extend-pg-params)
+    :parse-fn #(-> % jdbc-url/dissect extend-pg-params)]
    ["-s" "--secret LEIHS_SECRET"
     (str "default: " (:LEIHS_SECRET defaults))
     :default (env-or-default :LEIHS_SECRET)]])

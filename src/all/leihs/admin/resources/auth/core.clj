@@ -38,6 +38,7 @@
                          [:= password secret] ]])
       (sql/merge-where [:= (sql/call :lower :users.email) (sql/call :lower email)])
       (sql/merge-where [:= :users.sign_in_enabled true])
+      (sql/merge-where [:= :users.password_sign_in_enabled true])
       sql/format))
 
 (defn password-sign-in

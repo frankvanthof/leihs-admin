@@ -49,7 +49,13 @@
    [ring/ring-core "1.6.3"]
    ]
 
-  :jvm-opts ["--add-modules" "java.xml.bind"]
+
+  ; jdk 9 needs ["--add-modules" "java.xml.bind"]
+  :jvm-opts #=(eval (if (and (System/getenv "JDK_HOME")
+                             (= (System/getenv "JDK_HOME") "/usr/lib/jvm/java-8-openjdk-amd64"))
+                      []
+                      ["--add-modules" "java.xml.bind"]))
+
   :javac-options ["-target" "1.8" "-source" "1.8" "-Xlint:-options"]
 
   :source-paths ["src/all"]

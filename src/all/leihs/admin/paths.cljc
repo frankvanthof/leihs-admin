@@ -26,6 +26,8 @@
           (leaf "/manage" :lend)
           (leaf "/borrow" :borrow)
           (branch "/admin"
+                  (leaf "/status" :status)
+                  (leaf "/shutdown" :shutdown)
                   (leaf "/initial-admin" :initial-admin)
                   (branch "/debug"
                           (leaf "" :debug)
