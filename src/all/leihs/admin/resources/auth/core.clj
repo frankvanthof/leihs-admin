@@ -8,12 +8,13 @@
     [leihs.admin.resources.auth.back.session :as session]
     [leihs.admin.resources.auth.back.token :as token]
 
-    [ring.util.response :refer [redirect]]
     [cider-ci.open-session.encryptor :as encryptor]
     [clojure.java.jdbc :as jdbc]
     [clojure.set :refer [rename-keys]]
+    [clojure.walk]
     [compojure.core :as cpj]
     [pandect.core]
+    [ring.util.response :refer [redirect]]
 
     [clj-logging-config.log4j :as logging-config]
     [clojure.tools.logging :as logging]
@@ -55,6 +56,39 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defn shib-params->user-params [m]
+  (let [m (clojure.walk/keywordize-keys m)]
+    {:email (:mail m)
+     :firstname (:givenname m)
+     :lastname (:surname m)
+     :org_id (:uniqueid m)}))
+
+(defn validate-user-params! [params]
+  (doseq [p [:email :firstname :lastname :org_id]]
+    (when-not (presence (get params p nil))
+      (throw (ex-info (str "The parameter " p " is required to sign in!")
+                      {:status 412 :params params})))))
+
+(defn create-or-update-user [params tx]
+  (if (->> ["SELECT true AS exists FROM users WHERE lower(email) = lower(?)" (:email params)]
+           (jdbc/query tx ) first :exists)
+    (jdbc/update! tx :users params ["lower(email) = lower(?)" (:email params)])
+    (jdbc/insert! tx :users params))
+  (first (jdbc/query tx ["SELECT *  FROM users WHERE lower(email) = lower(?)" (:email params)])))
+
+(defn shib-sign-in
+  ([{headers :headers tx :tx sba :secret-ba}]
+   (shib-sign-in headers (String. sba) tx))
+  ([headers secret tx]
+   (let [user-params (shib-params->user-params headers)
+         _ (validate-user-params! user-params)
+         user (create-or-update-user user-params tx)]
+     (assert user)
+     (session/create-user-session
+       user secret (redirect (path :admin) :see-other) tx))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (defn sign-out [request]
   (-> (redirect (or (-> request :form-params :url presence)
                     (path :admin)) :see-other)
@@ -68,14 +102,16 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn get-auth [request]
-  (when-let [auth-ent (:authenticated-entity request)]
-    {:body auth-ent}))
+  (when (= :json (-> request :accept :mime))
+    (when-let [auth-ent (:authenticated-entity request)]
+      {:body auth-ent})))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (def routes
   (cpj/routes
     (cpj/GET (path :auth) [] #'get-auth)
+    (cpj/GET (path :auth-shib-sign-in) [] #'shib-sign-in)
     (cpj/POST (path :auth-password-sign-in) [] #'password-sign-in)
     (cpj/POST (path :auth-sign-out) [] #'sign-out)))
 
@@ -88,4 +124,4 @@
 ;(logging-config/set-logger! :level :debug)
 ;(logging-config/set-logger! :level :info)
 ;(debug/debug-ns 'cider-ci.utils.shutdown)
-;(debug/debug-ns *ns*)
+(debug/debug-ns *ns*)

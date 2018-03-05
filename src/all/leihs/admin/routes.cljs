@@ -69,9 +69,10 @@
                              :url location-href
                              :path (.getPath location-url)
                              :query-params (-> location-url .getQuery decode-query-params))
-                      ;(js/console.log (with-out-str (pprint [handler-key route-params])))
+                      (js/console.log (with-out-str (pprint [handler-key route-params])))
                       ))
      :path-exists? (fn [path]
+                     (js/console.log (with-out-str (pprint (match-path path))))
                      (boolean (match-path path)))}))
 
 (defn init []

@@ -41,7 +41,7 @@
    :password_sign_in_enabled
    :updated_at
    :zip
-   [:unique_id :org_id]
+   :org_id
    [(-> (sql/select :%count.*)
         (sql/from :contracts)
         (sql/merge-where [:= :contracts.user_id :users.id]))
@@ -68,7 +68,7 @@
    :zip])
 
 (def user-write-keymap
-  {:org_id :unique_id})
+  {})
 
 
 ;;; user ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

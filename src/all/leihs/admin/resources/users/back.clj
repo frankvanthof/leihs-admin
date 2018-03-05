@@ -15,7 +15,7 @@
 
 
 (def users-base-query
-  (-> (sql/select :id, :login, :firstname, :lastname, :email, :img32_data_url, [:unique_id :org_id])
+  (-> (sql/select :id, :login, :firstname, :lastname, :email, :img32_data_url, :org_id)
       (sql/from :users)
       (sql/order-by :lastname :firstname)
       (sql/merge-where [:= nil :delegator_user_id])
@@ -53,9 +53,9 @@
   (case (-> request :query-params :type)
     (nil "any") query
     "org" (-> query
-              (sql/merge-where [:<> nil :unique_id]))
+              (sql/merge-where [:<> nil :org_id]))
     "manual" (-> query
-                 (sql/merge-where [:= nil :unique_id]))))
+                 (sql/merge-where [:= nil :org_id]))))
 
 (defn role-filter [query request]
   (let [role (-> request :query-params :role)]
@@ -85,9 +85,10 @@
       sql/format))
 
 (defn users [request]
-  {:body
-   {:users
-    (jdbc/query (:tx request) (users-query request))}})
+  (when (= :json (-> request :accept :mime))
+    {:body
+     {:users
+      (jdbc/query (:tx request) (users-query request))}}))
 
 
 (def routes

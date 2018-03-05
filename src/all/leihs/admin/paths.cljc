@@ -20,6 +20,7 @@
           (leaf "/" :leihs)
           (branch "/auth"
                   (leaf "" :auth)
+                  (leaf "/shib-sign-in" :auth-shib-sign-in)
                   (leaf "/password-sign-in" :auth-password-sign-in)
                   (leaf "/sign-out" :auth-sign-out))
           (leaf "/procure" :procure)
@@ -54,8 +55,7 @@
                           (branch "/transfer/"
                                   (param :target-user-id)
                                   (leaf "" :user-transfer-data))))
-          (leaf "/" :redirect-to-root)
-          (leaf true :not-found)))
+          (leaf "/" :redirect-to-root)))
 
 ;(path-for (paths) :user :user-id "{user-id}")
 ;(match-route (paths) "/users/512")

@@ -107,4 +107,4 @@
 ;(logging-config/set-logger! :level :info)
 ;(debug/debug-ns 'cider-ci.utils.shutdown)
 ;(debug/debug-ns 'cider-ci.open-session.encryptor)
-;(debug/debug-ns *ns*)
+(debug/debug-ns *ns*)

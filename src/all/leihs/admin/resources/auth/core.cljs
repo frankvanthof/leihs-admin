@@ -26,7 +26,7 @@
 
 (def password-sign-in* (reagent/atom {}))
 
-(defn sign-in-form-component []
+(defn password-sign-in-component []
   [:div
    [:h2 "Sign in with password"]
    (when (-> @state/routing-state* :query-params :sign-in-warning)
@@ -70,6 +70,21 @@
       {:type :submit}
       [:i.fas.fa-sign-in-alt] " Sign in"]]]
    [:div.clearfix]])
+
+(defn shib-sign-in-component []
+  [:div
+   [:h2 "Sign in via Shibboleth / SwitchAAI"]
+   [:div.float-right
+    [:a.btn.btn-primary {:href "/Shibboleth.sso/Login"}
+     [:i.fas.fa-sign-in-alt] " Sign in via Shibboleth / SwitchAAI"]]
+   [:div.clearfix]])
+
+
+(defn sign-in-form-component []
+  [:div
+   [shib-sign-in-component]
+   [password-sign-in-component]
+   ])
 
 (defn password-sign-in-page []
   (reagent/create-class

@@ -43,7 +43,7 @@
 
 (def handler-resolve-table
   {
-   :admin html/not-found-handler
+   :admin html/html-handler
    :api-token api-token/routes
    :api-token-delete html/html-handler
    :api-token-edit html/html-handler
@@ -51,6 +51,7 @@
    :api-tokens api-tokens/routes
    :auth auth/routes
    :auth-password-sign-in auth/routes
+   :auth-shib-sign-in auth/routes
    :auth-sign-out auth/routes
    :borrow html/html-handler
    :debug html/html-handler
@@ -105,12 +106,15 @@
    (fn [request]
      (wrap-dispatch-to-html handler request)))
   ([handler request]
-   (if (and (not (do-not-dispatch-to-std-frontend-handler-keys
-                   (:handler-key request)))
-            (not (#{:post :put :patch :delete} (:request-method request)))
-            (= (-> request :accept :mime) :html))
-     (html/html-handler request)
-     (handler request))))
+   (let [response (handler request)]
+     (if (and (nil? response)
+              ; TODO we might not need the following after we check (?nil response)
+              (not (do-not-dispatch-to-std-frontend-handler-keys
+                     (:handler-key request)))
+              (not (#{:post :put :patch :delete} (:request-method request)))
+              (= (-> request :accept :mime) :html))
+       (html/html-handler request)
+       response))))
 
 (defn wrap-resolve-handler
   ([handler]
