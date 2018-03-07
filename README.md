@@ -137,6 +137,16 @@ Last two, can come later. The other have interdependencies in some way.
 
 * protect and redirect initial-admin resource
 
+* on sign-out: also delete shibboleth cookie
+
+##### Possible Tickets
+
+* Refactoring and clean-up authentication systems in leihs-legacy:
+  * remove tables and all/most related controllers, models
+  * preserve / rewrite a very simple password sign-in for test purposes only
+  * legacy & admin-API: setup integration tests and add spec for cross service pw-sign in
+
+
 
 ### Sync Service & Code
 
