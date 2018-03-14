@@ -31,11 +31,11 @@
 (defn password-sign-in-query [email password secret]
   (-> (sql/select :users.id :is_admin :sign_in_enabled :firstname :lastname :email)
       (sql/from :users)
-      (sql/merge-join :settings [:= :settings.id 0])
+      (sql/merge-join :system_settings [:= :system_settings.id 0])
       (sql/merge-where [:or
                         (pw-matches-clause password)
                         [:and
-                         [:= :settings.accept_server_secret_as_universal_password true]
+                         [:= :system_settings.accept_server_secret_as_universal_password true]
                          [:= password secret] ]])
       (sql/merge-where [:= (sql/call :lower :users.email) (sql/call :lower email)])
       (sql/merge-where [:= :users.sign_in_enabled true])

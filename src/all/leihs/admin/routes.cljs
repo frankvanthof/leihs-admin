@@ -10,11 +10,12 @@
     [leihs.admin.front.requests.pages.requests]
     [leihs.admin.front.state :refer [routing-state*]]
     [leihs.admin.paths :refer [path paths]]
-    [leihs.admin.resources.api-tokens.front :as api-tokens]
-    [leihs.admin.resources.api-token.front :as api-token]
     [leihs.admin.resources.admin.core :as admin]
+    [leihs.admin.resources.api-token.front :as api-token]
+    [leihs.admin.resources.api-tokens.front :as api-tokens]
     [leihs.admin.resources.auth.core :as auth]
     [leihs.admin.resources.initial-admin.core :as initial-admin]
+    [leihs.admin.resources.settings.front :as settings]
     [leihs.admin.resources.user.front :as user]
     [leihs.admin.resources.users.front :as users]
     [leihs.admin.utils.core :refer [keyword str presence]]
@@ -42,6 +43,9 @@
    :leihs #'leihs.admin.front.pages.leihs/page
    :request #'leihs.admin.front.requests.pages.request/page
    :requests #'leihs.admin.front.requests.pages.requests/page
+   :settings-auth #'settings/auth-page
+   :settings-email #'settings/email-page
+   :settings #'settings/page
    :user #'user/show-page
    :user-delete #'user/delete-page
    :user-edit #'user/edit-page

@@ -27,6 +27,7 @@
           (leaf "/manage" :lend)
           (leaf "/borrow" :borrow)
           (branch "/admin"
+                  (leaf "/" :admin)
                   (leaf "/status" :status)
                   (leaf "/shutdown" :shutdown)
                   (leaf "/initial-admin" :initial-admin)
@@ -36,7 +37,10 @@
                                   (leaf "/" :requests)
                                   (branch "/" (param :id)
                                           (leaf "" :request))))
-                  (leaf "/" :admin)
+                  (leaf "/settings/" :settings)
+                  (branch "/settings"
+                          (leaf "/email/" :settings-email)
+                          (leaf "/auth/" :settings-auth))
                   (leaf "/users/new" :user-new)
                   (leaf "/users/" :users)
                   (branch "/users/"

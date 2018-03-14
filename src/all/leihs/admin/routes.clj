@@ -63,8 +63,11 @@
    :redirect-to-root redirect-to-root-handler
    :request html/html-handler
    :requests html/html-handler
-   :status status/routes
+   :settings settings/routes
+   :settings-auth html/html-handler
+   :settings-email html/html-handler
    :shutdown shutdown/routes
+   :status status/routes
    :user user/routes
    :user-delete html/html-handler
    :user-edit html/html-handler

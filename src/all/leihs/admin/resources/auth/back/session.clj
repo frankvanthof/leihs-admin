@@ -35,7 +35,7 @@
                   [:user_sessions.created_at :user_session_created_at])
       (sql/from :users)
       (sql/merge-join :user_sessions [:= :users.id :user_id])
-      (sql/merge-join :settings [:= :settings.id 0])
+      (sql/merge-join :system_settings [:= :system_settings.id 0])
       (sql/merge-where (sql/call
                          := :user_sessions.token_hash
                          (sql/call :encode
@@ -43,7 +43,7 @@
                                    "hex")))
       (sql/merge-where
         (sql/raw (str "now() < user_sessions.created_at + "
-                      " settings.sessions_max_lifetime_secs * interval '1 second'")))
+                      " system_settings.sessions_max_lifetime_secs * interval '1 second'")))
       (sql/merge-where [:= :sign_in_enabled true])
       sql/format))
 
@@ -76,7 +76,7 @@
         (handler request)))))
 
 (defn sessions-settings [tx]
-  (->> "SELECT sessions_force_uniqueness, sessions_force_secure FROM SETTINGS"
+  (->> "SELECT sessions_force_uniqueness, sessions_force_secure FROM system_settings"
        (jdbc/query tx) first))
 
 (defn create-user-session [user secret response tx]
