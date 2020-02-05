@@ -4,14 +4,58 @@ traits:
   S3-Cache: true
 
 scripts:
-  build-admin-uberjar:
-    exclusive_executor_resource: build-admin-jar
-    timeout: 5 Minutes
+  prepare-shared-ui:
+    exclusive_executor_resource: build-leihs-ui
+    environment_variables:
+      RUBY: '{{RUBY_ENGINE}}-{{RUBY_VERSION}}'
+      RUBY_ENGINE: ruby
+      RUBY_VERSION: 2.6.0
     body: |
       #!/usr/bin/env bash
       set -euxo
 
-      # custom stuff for this project 
+      WORK_DIR="$LEIHS_ADMIN_DIR"
+
+      ARTEFACT_NAME="leihs-ui"
+      DIGEST="$(cd leihs-ui && git log -n 1 HEAD --pretty=%T)"
+
+      ARTEFACT_DIR="./leihs-ui/dist"                              # path of artefact *relative to* working dir
+      LOCAL_CACHED_ARTEFACT="/tmp/${ARTEFACT_NAME}_${DIGEST}.tgz" # path of locally cached artefact
+      S3_CACHED_ARTEFACT="${ARTEFACT_NAME}_${DIGEST}.tgz"         # name of the artefact in the S3 Bucket
+
+      export PATH=~/.rubies/$RUBY/bin:$PATH # the s3-cache-helper needs this
+
+      cd "$WORK_DIR"
+
+      # check if already locally cached
+      if [ -e $LOCAL_CACHED_ARTEFACT ]; then
+          echo "INFO: locally cached artefact found; extracting and exiting"
+          tar -xvz -f "$LOCAL_CACHED_ARTEFACT"
+          exit 0
+      # try to download from global cache
+      else
+        s3-cache-helper download -n "$S3_CACHED_ARTEFACT" -p "$LOCAL_CACHED_ARTEFACT"
+        # build the artefact if it was not downloaded
+        if [ ! -f ${LOCAL_CACHED_ARTEFACT} ]; then
+          ./scripts/prepare-shared-ui.sh
+          tar -cvz -f "$LOCAL_CACHED_ARTEFACT" "$ARTEFACT_DIR"
+          s3-cache-helper upload -n "$S3_CACHED_ARTEFACT" -p "$LOCAL_CACHED_ARTEFACT"
+        fi
+        # extract the either downloaded or build artefact
+        tar -xvz -f "$LOCAL_CACHED_ARTEFACT"
+      fi
+
+  build-admin-uberjar:
+    exclusive_executor_resource: build-admin-jar
+    timeout: 5 Minutes
+    start_when:
+      shared ui was built:
+        script_key: prepare-shared-ui
+    body: |
+      #!/usr/bin/env bash
+      set -euxo
+
+      # custom stuff for this project
       #
       export PROJECT_DIR="$LEIHS_ADMIN_DIR"
       export UBERJAR_NAME="leihs-admin"
@@ -20,8 +64,7 @@ scripts:
         echo "INFO: building the ${UBERJAR_NAME} uberjar now"
         export LEIN_SNAPSHOTS_IN_RELEASE=yes
         cd $PROJECT_DIR
-        sh scripts/prepare-shared-ui.sh 
-        lein uberjar 
+        lein uberjar
       }
 
       # the reminder should be pretty much the same for all our projects resulting in an uberjar
