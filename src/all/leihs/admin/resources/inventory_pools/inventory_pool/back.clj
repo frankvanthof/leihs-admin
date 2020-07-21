@@ -5,6 +5,7 @@
     [leihs.admin.paths :refer [path]]
     [leihs.core.sql :as sql]
     [leihs.admin.resources.inventory-pools.shared :as shared :refer [inventory-pool-path]]
+    [leihs.admin.resources.mail-templates.back :as mail-templates]
 
     [clojure.set :refer [rename-keys]]
     [clojure.java.jdbc :as jdbc]
@@ -40,6 +41,7 @@
     (do
       (jdbc/insert! tx :workdays
                     {:inventory_pool_id (:id inventory-pool)})
+      (mail-templates/create-for-inventory-pool tx (:id inventory-pool))
       {:body inventory-pool})
     {:status 422
      :body "No inventory-pool has been created."}))
