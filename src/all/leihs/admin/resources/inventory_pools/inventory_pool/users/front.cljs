@@ -105,7 +105,7 @@
                                               {:page 1
                                                :role val}))))}
       ;(console.log (clj->js roles-hierarchy))
-      (doall (for [a (concat [" "] roles-hierarchy)]
+      (doall (for [a (concat ["any" "none"] roles-hierarchy)]
                [:option {:key a :value a} a]))]]))
 
 

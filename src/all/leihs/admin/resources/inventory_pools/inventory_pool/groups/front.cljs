@@ -70,7 +70,7 @@
                       (accountant/navigate! (groups/page-path-for-query-params
                                               {:page 1
                                                :role val}))))}
-      (for [a  (concat [""] roles-hierarchy)]
+      (for [a  (concat ["any" "none"] roles-hierarchy)]
         [:option {:key a :value a} a])]]))
 
 

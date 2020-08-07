@@ -40,16 +40,35 @@
 ;;; groups ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
+(defn filter-effective-role [query inventory-pool-id role]
+  (-> query
+      (sql/merge-join :group_access_rights
+                      [:and
+                       [:= :group_access_rights.group_id :groups.id]
+                       [:= :group_access_rights.inventory_pool_id inventory-pool-id]])
+      (sql/merge-where [:in :group_access_rights.role
+                        (map str (roles/expand-to-hierarchy-up-and-include role))])))
+
+
+(defn filter-for-none-role [query inventory-pool-id]
+  (-> query
+      (sql/merge-where
+        [:not [:exists (-> (sql/select :true)
+                           (sql/from :group_access_rights)
+                           (sql/merge-where [:= :group_access_rights.inventory_pool_id inventory-pool-id])
+                           (sql/merge-where [:= :group_access_rights.group_id :groups.id]))]])))
+
 (defn filter-by-role [query inventory-pool-id {:as request}]
-  (if-let [role (-> request :query-params :role presence)]
-    (-> query
-        (sql/merge-join :group_access_rights
-                        [:and
-                         [:= :group_access_rights.group_id :groups.id]
-                         [:= :group_access_rights.inventory_pool_id inventory-pool-id]])
-        (sql/merge-where [:in :group_access_rights.role
-                          (map str (roles/expand-to-hierarchy-up-and-include role))]))
-    query))
+  (let [role (-> request :query-params :role presence str)]
+    (case role
+      "" query
+      "any" query
+      "none" (filter-for-none-role query inventory-pool-id)
+      ("customer"
+        "group_manager"
+        "lending_manager"
+        "inventory_manager") (filter-effective-role
+                               query inventory-pool-id role))))
 
 
 (defn groups-query [inventory-pool-id request]

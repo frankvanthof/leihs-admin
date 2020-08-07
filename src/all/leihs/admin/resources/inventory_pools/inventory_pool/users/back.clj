@@ -39,17 +39,34 @@
 
 ;;; users ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defn filter-effective-role [query inventory-pool-id role]
+  (-> query
+      (sql/merge-join :access_rights
+                      [:and
+                       [:= :access_rights.user_id :users.id]
+                       [:= :access_rights.inventory_pool_id inventory-pool-id]])
+      (sql/merge-where [:in :access_rights.role
+                        (map str (roles/expand-to-hierarchy-up-and-include role))])))
+
+(defn filter-for-none-role [query inventory-pool-id]
+  (-> query
+      (sql/merge-where
+        [:not [:exists (-> (sql/select :true)
+                           (sql/from :access_rights)
+                           (sql/merge-where [:= :access_rights.inventory_pool_id inventory-pool-id])
+                           (sql/merge-where [:= :access_rights.user_id :users.id]))]])))
 
 (defn filter-by-role [query inventory-pool-id {:as request}]
-  (if-let [role (-> request :query-params :role presence)]
-    (-> query
-        (sql/merge-join :access_rights
-                        [:and
-                         [:= :access_rights.user_id :users.id]
-                         [:= :access_rights.inventory_pool_id inventory-pool-id]])
-        (sql/merge-where [:in :access_rights.role
-                          (map str (roles/expand-to-hierarchy-up-and-include role))]))
-    query))
+  (let [role (-> request :query-params :role presence str)]
+    (case role
+      "" query
+      "any" query
+      "none" (filter-for-none-role query inventory-pool-id)
+      ("customer"
+        "group_manager"
+        "lending_manager"
+        "inventory_manager") (filter-effective-role
+                               query inventory-pool-id role))))
 
 (defn filter-suspended [query inventory-pool-id {:as request}]
   (if-not (-> request :query-params :suspended)
