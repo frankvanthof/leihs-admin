@@ -49,28 +49,11 @@
       (sql/merge-where (sql/raw (str "now() < api_tokens.expires_at")))
       sql/format))
 
-(defn server-admin-authenticated-entity-properties []
-  {:scope_read true
-   :scope_write true
-   :scope_admin_read true
-   :scope_admin_write true
-   :scope_system_admin_read true
-   :scope_system_admin_write true
-   :user_id nil
-   :is_admin true
-   :account_enabled true
-   :firstname ""
-   :lastname "server-admin"
-   :email "server-admin@leihs"
-   :api_token_id nil
-   :api_token_created_at (time/now)})
+
 
 (defn user-auth-entity! [token-secret server-secret settings tx]
   (if-let [uae (or (->> (user-with-valid-token-query token-secret)
-                        (jdbc/query (ds/get-ds)) first)
-                   (when (and (= token-secret server-secret)
-                              (-> settings :accept_server_secret_as_universal_password))
-                     (server-admin-authenticated-entity-properties)))]
+                        (jdbc/query (ds/get-ds)) first))]
     (assoc uae
            :authentication-method :token
            :scope_admin_read (and (:scope_admin_read uae) (:is_admin uae))
@@ -98,7 +81,6 @@
                  last))))
 
 (defn authenticate [{tx :tx
-                     sba :secret-ba
                      :as request}
                     _handler]
   (catcher/snatch
@@ -106,9 +88,8 @@
      :return-fn (fn [e] (token-error-page e request))}
     (let [handler (ring-exception/wrap _handler)]
       (if-let [token-secret (extract-token-value request)]
-                 (let [user-auth-entity (user-auth-entity!
-                                          token-secret (String. sba)
-                                                           (:settings request) tx)]
+        (let [user-auth-entity (user-auth-entity!
+                                 token-secret (:settings request) tx)]
           (handler (assoc request :authenticated-entity user-auth-entity)))
         (handler request)))))
 

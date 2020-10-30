@@ -40,7 +40,7 @@ Building and Testing
 ## Testing
 
 1. build the application `lein do clean, uberjar`
-2. start the application `java -jar target/leihs-admin.jar run -s secret`
+2. start the application `java -jar target/leihs-admin.jar run`
 3. run specs in a second terminal `bundle exec rspec spec/`
 
 
@@ -90,7 +90,6 @@ changes so far:
 
 * new password authentication
 * sign-in via session, sign-out
-* new setting server secret as password
 
 ## Initial Admin (preliminary)
 

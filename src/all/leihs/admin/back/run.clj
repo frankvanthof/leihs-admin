@@ -25,7 +25,6 @@
 
 (def defaults
   {:LEIHS_ADMIN_HTTP_BASE_URL "http://localhost:3220"
-   :LEIHS_SECRET (when (= leihs.admin.env/env :dev) "secret")
    :LEIHS_DATABASE_URL "jdbc:postgresql://leihs:leihs@localhost:5432/leihs?min-pool-size=2&max-pool-size=16"
    :ENABLE_SHUTDOWN_ROUTE "false"})
 
@@ -37,8 +36,6 @@
     (require 'leihs.admin.back.ssr)
     ; ---------------------------------------------------
     (logging/info "Invoking run with options: " options)
-    (when (nil? (:secret options))
-      (throw (IllegalStateException. "LEIHS_SECRET resp. secret must be present!")))
     (shutdown/init options)
     (let [status (status/init)
           ds (ds/init (:database-url options) (:health-check-registry status))
@@ -73,9 +70,6 @@
     :default (-> (env-or-default :LEIHS_DATABASE_URL)
                  jdbc-url/dissect extend-pg-params)
     :parse-fn #(-> % jdbc-url/dissect extend-pg-params)]
-   ["-s" "--secret LEIHS_SECRET"
-    (str "default: " (:LEIHS_SECRET defaults))
-    :default (env-or-default :LEIHS_SECRET)]
    shutdown/pid-file-option
    ])
 

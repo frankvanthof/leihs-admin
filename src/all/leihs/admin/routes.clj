@@ -214,13 +214,6 @@
     (or (handler request)
         {:status 404})))
 
-(defn wrap-secret-byte-array
-  "Adds the secret into the request as a byte-array (to prevent
-  visibility in logs etc) under the :secret-byte-array key."
-  [handler secret]
-  (fn [request]
-    (handler (assoc request :secret-ba (.getBytes secret)))))
-
 (defn init [secret]
   (routing/init paths resolve-table)
   (I> wrap-handler-with-logging
@@ -232,7 +225,6 @@
       auth/wrap-authenticate
       ring.middleware.cookies/wrap-cookies
       wrap-empty
-      (wrap-secret-byte-array secret)
       settings/wrap
       ds/wrap-tx
       status/wrap
@@ -257,4 +249,4 @@
 ;#### debug ###################################################################
 ;(logging-config/set-logger! :level :debug)
 ;(logging-config/set-logger! :level :info)
-;(debug/debug-ns *ns*)
+(debug/debug-ns *ns*)

@@ -52,7 +52,6 @@ jobs:
           LEIHS_ADMIN_DIR: "{{CIDER_CI_WORKING_DIR}}"
           LEIHS_DATABASE_URL: "jdbc:postgresql://localhost/{{DATABASE_NAME}}?max-pool-size=5"
           LEIHS_ADMIN_HTTP_BASE_URL: http://localhost:{{LEIHS_ADMIN_HTTP_PORT}}
-          LEIHS_SECRET: '{{CIDER_CI_TRIAL_ID}}'
           RAILS_ENV: test
           RUBY: '{{RUBY_ENGINE}}-{{RUBY_VERSION}}'
           RUBY_ENGINE: ruby
