@@ -30,11 +30,14 @@
 (defn head []
   [:head
    [:meta {:charset "utf-8"}]
+   [:meta {:hidden true :name "TODO: insert webapps_extra_html_head_start"}]
+   [:meta {:name "TODO"}]
    [:meta {:name "viewport"
            :content "width=device-width, initial-scale=1, shrink-to-fit=no"}]
    [:style "ol.breadcrumb.leihs-nav-right:empty {display: none}"]
    (include-site-css)
-   (include-font-css)])
+   (include-font-css)
+   [:meta {:hidden true :name "TODO: insert webapps_extra_html_head_end"}]])
 
 (defn body-attributes [request]
   {:data-user (some-> (:authenticated-entity request) to-json url/encode)
@@ -56,6 +59,7 @@
    :body (html5
            (head)
            [:body (body-attributes request)
+            [:div {:hidden true} "TODO: insert webapps_extra_html_body_start"]
             [:div
              (if-not (:leihs-disable-global-navbar system-env)
                (ssr/render-navbar request {:admin false}))
@@ -66,7 +70,8 @@
             (hiccup.page/include-js (cache-buster/cache-busted-path
                                       "/admin/leihs-shared-bundle.js"))
             (hiccup.page/include-js
-              (cache-buster/cache-busted-path "/admin/js/app.js"))])})
+              (cache-buster/cache-busted-path "/admin/js/app.js"))
+            [:div {:hidden true} "TODO: insert webapps_extra_html_body_end"]])})
 
 
 ;#### debug ###################################################################
