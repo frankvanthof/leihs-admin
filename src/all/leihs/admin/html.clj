@@ -59,7 +59,7 @@
             [:div
              (if-not (:leihs-disable-global-navbar system-env)
                (ssr/render-navbar request {:admin false}))
-             [:div#app.container-fluid
+             [:div#app
               [:div.alert.alert-warning
                [:h1 "Leihs Admin2"]
                [:p "This application requires Javascript."]]]]

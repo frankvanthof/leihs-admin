@@ -81,15 +81,16 @@
          [:span.build build]])])])
 
 (defn current-page []
-  [:div
-   [leihs.core.requests.modal/modal-component]
-   [leihs.admin.common.http-client.modals/modal-component]
-   [:div
-    (if-let [page (:page @routing/state*)]
-      [page]
-      [:div.page
-       [:h1.text-danger "Error 404 - There is no handler for the current path defined."]])]
-   [state/debug-component]
+  [:<>
+   [:div.container-fluid
+    [leihs.core.requests.modal/modal-component]
+    [leihs.admin.common.http-client.modals/modal-component]
+    [:div
+      (if-let [page (:page @routing/state*)]
+        [page]
+        [:div.page
+        [:h1.text-danger "Error 404 - There is no handler for the current path defined."]])]
+    [state/debug-component]]
    [:nav.footer.navbar.navbar-expand-lg.navbar-dark.bg-secondary.col.mt-4
     [:div.col
      [:a.navbar-brand {:href (path :admin {})} "leihs-admin"]
