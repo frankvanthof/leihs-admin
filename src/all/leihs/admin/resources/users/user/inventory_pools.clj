@@ -48,8 +48,7 @@
 (defn user-inventory-pools-query [user-id]
   (-> (sql/select :access_rights.role
                   [:inventory_pools.name :inventory_pool_name]
-                  [:inventory_pools.id :inventory_pool_id]
-                  )
+                  [:inventory_pools.id :inventory_pool_id])
       (sql/from :users)
       (sql/merge-where [:= :users.id user-id])
       (sql/merge-join :access_rights [:= :users.id :access_rights.user_id])

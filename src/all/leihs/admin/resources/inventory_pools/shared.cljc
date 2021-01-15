@@ -39,7 +39,7 @@
 (def default-query-params
   {:page 1
    :per-page defaults/PER-PAGE
-   :is-active :all
+   :is-active "true"
    :order [["name" "asc"] ["id" "asc"]]
    :term nil})
 

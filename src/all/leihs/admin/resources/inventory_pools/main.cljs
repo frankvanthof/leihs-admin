@@ -11,6 +11,8 @@
     [leihs.core.routing.front :as routing]
     [leihs.core.auth.core :as auth-core]
 
+
+    [leihs.admin.common.http-client.core :as http]
     [leihs.admin.defaults :as defaults]
     [leihs.admin.common.components :as components]
     [leihs.admin.utils.misc :refer [wait-component]]
@@ -73,6 +75,19 @@
                           body-with-indexed-inventory-pools (update-in body [:inventory-pools] (partial with-index offset))]
                       (swap! data* assoc url body-with-indexed-inventory-pools))))))))))
 
+(defn fetch [& _]
+  (let [chan (async/chan)
+        req (http/request {:chan chan})]
+    (go (let [resp (<! chan)]
+          (when (< (:status resp) 300)
+            (let [url (:url req)]
+              (swap! data* assoc url (-> resp :body :inventory-pools))
+              ; after some time reload or clean cached
+              (go (<! (timeout (* 3 60 1000)))
+                  (if (= url (:url @routing/state*))
+                    (fetch)
+                    (swap! data* dissoc url)))))))))
+
 (defn escalate-query-paramas-update [_]
   (fetch-inventory-pools)
   (swap! state/global-state*
@@ -90,27 +105,15 @@
 
 ;;; Filter ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn form-is-active-filter []
-  (let [active (or (-> @current-query-paramerters-normalized* :is-active presence) "all")]
-    [:div.form-group.ml-2.mr-2.mt-2
-     [:label.mr-1 {:for :inventory-pools-filter-type} "Active"]
-     [:select#inventory-pools-filter-type.form-control
-      {:value active
-       :on-change (fn [e]
-                    (let [val (or (-> e .-target .-value presence) "")]
-                      (accountant/navigate! (page-path-for-query-params
-                                              {:page 1
-                                               :is-active val}))))}
-      (for [t ["all" "active" "inactive"]]
-        [:option {:key t :value t} t])]]))
-
-
 (defn filter-component []
   [:div.card.bg-light
    [:div.card-body
    [:div.form-row
     [routing/form-term-filter-component]
-    [form-is-active-filter]
+    [routing/select-component
+     :label "Active"
+     :query-params-key :active
+     :options ["" "true" "false"]]
     [routing/form-per-page-component]
     [routing/form-reset-component]]]])
 

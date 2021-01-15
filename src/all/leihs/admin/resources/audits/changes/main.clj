@@ -102,7 +102,6 @@
              sql/format)
          (jdbc/query tx))}})
 
-
 (def routes
   (-> (cpj/routes
         (cpj/GET (path :audited-changes-meta {}) [] #'audited-changes-meta)

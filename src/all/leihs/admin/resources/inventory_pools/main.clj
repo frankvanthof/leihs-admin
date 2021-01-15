@@ -3,6 +3,7 @@
   (:require
     [leihs.core.core :refer [keyword str presence]]
     [leihs.core.sql :as sql]
+    [leihs.core.routing.back :as routing :refer [set-per-page-and-offset wrap-mixin-default-query-params]]
 
     [leihs.admin.paths :refer [path]]
     [leihs.admin.resources.inventory-pools.inventory-pool.main :as inventory-pool]
@@ -35,41 +36,16 @@
   (-> (apply sql/select (map #(keyword (str "inventory-pools." %)) shared/default-fields))
       (sql/merge-select [users-count-sub :users_count])
       (sql/merge-select [delegations-count-sub :delegations_count])
-      (sql/from :inventory_pools)
-      (#(apply sql/order-by (concat [%] (-> shared/default-query-params :order))))))
+      (sql/from :inventory_pools)))
 
-(defn set-per-page-and-offset
-  ([query {per-page :per-page page :page}]
-   (when (or (-> per-page presence not)
-             (-> per-page integer? not)
-             (> per-page 1000)
-             (< per-page 1))
-     (throw (ex-info "The query parameter per-page must be present and set to an integer between 1 and 1000."
-                     {:status 422})))
-   (when (or (-> page presence not)
-             (-> page integer? not)
-             (< page 0))
-     (throw (ex-info "The query parameter page must be present and set to a positive integer."
-                     {:status 422})))
-   (set-per-page-and-offset query per-page page))
-  ([query per-page page]
-   (-> query
-       (sql/limit per-page)
-       (sql/offset (* per-page (- page 1))))))
-
-(defn set-order [query query-params]
-  (let [order (some-> query-params :order seq vec)]
+(defn set-order [query {query-params :query-params :as request}]
+  (let [order (some-> query-params :order seq vec
+                      (->> (map (fn [[f o]] [(keyword f) (keyword o)]))))]
     (case order
-      nil query
-      [["name" "asc"]
-       ["id" "asc"]] (sql/order-by query
-                                   [:name :asc] [:id :asc])
-      [["users_count" "desc"]
-       ["id" "asc"]] (sql/order-by
-                       query [:users_count :desc] [:id :asc])
-      [["delegations_count" "desc"]
-       ["id" "asc"]] (sql/order-by
-                       query [:delegations_count :desc] [:id :asc]))))
+      ([[:name :asc][:id :asc]]
+       [[:users_count :desc] [:id :asc]]
+       [[:delegations_count :desc][:id :asc]]) (apply sql/order-by query order)
+      (apply sql/order-by query [[:name :asc][:id :asc]]))))
 
 (defn term-fitler [query request]
   (if-let [term (-> request :query-params-raw :term presence)]
@@ -79,48 +55,34 @@
                           ["~~*" :name (str "%" term "%")]]))
     query))
 
-
 (defn activity-filter [query request]
-  (case (-> request :query-params :is-active presence (or "all"))
-    "all" query
-    "active" (sql/merge-where query [:= :inventory_pools.is_active true])
-    "inactive" (sql/merge-where query [:= :inventory_pools.is_active false])))
-
-
-(defn select-fields [query request]
-  (if-let [fields (some->> request :query-params :fields
-                           (map keyword) set
-                           (clojure.set/intersection shared/available-fields))]
-    (apply sql/select query fields)
+  (case (-> request :query-params-raw :active)
+    "true" (sql/merge-where query [:= :inventory_pools.is_active true])
+    "false" (sql/merge-where query [:= :inventory_pools.is_active false])
     query))
 
-(defn inventory-pools-query [request]
-  (let [query-params (-> request :query-params
-                         shared/normalized-query-parameters)]
-    (-> inventory-pools-base-query
-        (set-per-page-and-offset query-params)
-        (set-order query-params)
-        (activity-filter request)
-        (term-fitler request)
-        (select-fields request))))
+(defn inventory-pools-query [{:as request}]
+  (-> inventory-pools-base-query
+      (set-per-page-and-offset request)
+      (set-order request)
+      (activity-filter request)
+      (term-fitler request)))
 
-(defn inventory-pools-formated-query [request]
-  (-> request
-      inventory-pools-query
-      sql/format))
+(defn inventory-pools [{tx :tx :as request}]
+  {:body {:inventory-pools
+          (-> request
+              inventory-pools-query
+              sql/format
+              (->> (jdbc/query tx))
 
-(defn inventory-pools [request]
-  (when (= :json (-> request :accept :mime))
-    {:body
-     {:inventory-pools
-      (jdbc/query (:tx request) (inventory-pools-formated-query request))}}))
+              )}})
 
 (def routes
-  (->
-    (cpj/routes
-      (cpj/GET (path :inventory-pools) [] #'inventory-pools)
-      (cpj/POST (path :inventory-pools) [] inventory-pool/routes)
-      (cpj/ANY inventory-pool-path [] inventory-pool/routes))))
+  (-> (cpj/routes
+        (cpj/GET (path :inventory-pools) [] #'inventory-pools)
+        (cpj/POST (path :inventory-pools) [] inventory-pool/routes)
+        (cpj/ANY inventory-pool-path [] inventory-pool/routes))
+      (wrap-mixin-default-query-params shared/default-query-params)))
 
 
 ;#### debug ###################################################################
