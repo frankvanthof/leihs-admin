@@ -60,8 +60,6 @@
       [:span " Sign out "]
       [:i.fas.fa-sign-out-alt]]]]])
 
-
-
 (defn version-component []
   [:span.navbar-text "Version "
    (let [major (:version_major @state/leihs-admin-version*)
@@ -80,33 +78,144 @@
         [:span "+"
          [:span.build build]])])])
 
+(defn sidebar-dropdown [title props children]
+  (let [aprops (apply dissoc props [:active :icon :open])
+        active? (:active props)
+        icon (:icon props)
+        open? (cond (contains? props :open) (:open props) :else true)
+        ]
+    [:li (merge aprops {:class (str "c-sidebar-nav-dropdown " (when open? " c-show ") (:class aprops))} )
+     [:a (merge {:class (str "c-sidebar-nav-link nav-dropdown-toggle " (when active? "c-active"))})
+      (when icon [:<> [:i {:class (str "c-sidebar-nav-icon " icon)}] " "])
+      title]
+     (when (seq children)
+       [:ul {:class "c-sidebar-nav-dropdown-items"}
+        children])]))
+  
+
+(defn sidebar-nav-item [props children]
+  (let [nprops (apply dissoc props [:href :badge :icon :active])
+        active? (:active props)
+        href (:href props)
+        icon (:icon props)
+        badge (:badge props)]
+    [:li (merge nprops {:class (str "c-sidebar-nav-item " (:class nprops))})
+     [:a (merge {:class (str "c-sidebar-nav-link " (when active? " c-active ")) :href href})
+      (when icon [:<> [:i {:class (str "c-sidebar-nav-icon " icon)}] " "])
+      children
+      (when badge badge)]]))
+
+(defn sidebar []
+  (let [open? true]
+    [:nav.c-sidebar {:class (when open? "c-sidebar-show")}
+   [:div {:class "c-sidebar c-sidebar-light c-sidebar-show" #_:style #_{:background "#1b261a"}}
+
+    [:ul {:class "c-sidebar-nav"}
+
+     [:li {:class "c-sidebar-nav-title bg-light text-dark"} "Manage"]
+
+     [sidebar-nav-item {:href "#", :active false, :icon "fas fa-cubes"} "Inventory-Pools"]
+    ;  [sidebar-nav-item {:href "#", :class "" :active true, :icon "fas fa-cube"} ]
+     [:li.c-sidebar-nav-dropdown.c-show
+      [:a (merge {:class (str "c-sidebar-nav-link nav-dropdown-toggle c-active font-bold")})
+       [:<> [:i {:class (str "c-sidebar-nav-icon fas fa-cube")}] " "]
+       "ITZ-Ausstellungen"]
+      [:div.pl-5
+       [sidebar-nav-item {:href "#", :icon "fas fa-user-friends"} "Users"]
+       [sidebar-nav-item {:href "#", :icon "fas fa-users"} "Groups"]
+       [sidebar-nav-item {:href "#", :icon "fas fa-hands-helping"} "Delegations"]
+       [sidebar-nav-item {:href "#", :icon "fas fa-hands"} "Entitlement-Groups"]
+       [sidebar-nav-item {:href "#", :icon "fas fa-list"} "Mail Templates"]
+       [sidebar-nav-item {:href "#", :icon "fas fa-list"} "Fields"]
+       ]]]]
+
+   [:div {:class "c-sidebar c-sidebar-dark c-sidebar-show" #_:style #_{:background "#1b261a"}}
+    [:ul {:class "c-sidebar-nav"}
+
+     [:li {:class "c-sidebar-nav-title"} "Reports"]
+
+     [sidebar-nav-item {:href "#", :icon "fas fa-chart-line"} "Statistics"]
+     [sidebar-nav-item {:href "#", :icon "fas fa-cube"} "Inventory"]
+     [sidebar-nav-item {:href "#", :icon "fas fa-thermometer-half"} "Status Info"]
+     [sidebar-dropdown "Audits" {:icon "fas fa-history" :open false}
+      [:<>
+       [sidebar-nav-item {:href "#", :icon "fas fa-history"} "Legacy"]
+       [sidebar-nav-item {:href "#", :icon "fas fa-save"} "Audited Changes"]
+       [sidebar-nav-item {:href "#", :icon "fas fa-exchange-alt"} "Audited Requests"]
+       #_[sidebar-nav-item {:href "#"} " Three"]]]
+
+     [:li {:class "c-sidebar-nav-title"} "Configuration"]
+
+     [sidebar-nav-item {:href "#", :icon "fas fa-list"} "Fields"]
+     [sidebar-nav-item {:href "#", :icon "fas fa-list"} "Buildings"]
+     [sidebar-nav-item {:href "#", :icon "fas fa-list"} "Rooms"]
+     [sidebar-nav-item {:href "#", :icon "fas fa-list"} "Suppliers"]
+     [sidebar-nav-item {:href "#", :icon "fas fa-list"} "Languages"]
+     [sidebar-nav-item {:href "#", :icon "fas fa-list"} "Mail Templates"]
+
+
+     [:li {:class "c-sidebar-nav-title"} "Administration"]
+     [sidebar-nav-item {:href "#", :icon "fas fa-user-friends"} "Users"]
+     [sidebar-nav-item {:href "#", :icon "fas fa-users"} "Groups"]
+     [sidebar-nav-item {:href "#", :icon "fas fa-user-astronaut"} "System-Admins"]
+     [sidebar-nav-item {:href "#", :icon "fas fa-id-card"} "Authentication-Systems"]
+
+     [sidebar-dropdown "Settings" {:open true}
+      [:<>
+       [sidebar-nav-item {:href "#", :icon "fas fa-globe"} "Languages"]
+       [sidebar-nav-item {:href "#", :icon "fas fa-box-open"} "Miscellaneous"]
+       [sidebar-nav-item {:href "#", :icon "fas fa-paper-plane"} "SMTP"]
+       [sidebar-nav-item {:href "#", :icon "fas fa-shield-alt"} "System & Security"]
+       #_[sidebar-nav-item {:href "#"} " Three"]]]
+
+    ; [sidebar-dropdown "A Menu" {}
+    ;  [:<>
+    ;   [sidebar-nav-item {:href "#" :badge [:span {:class "badge badge-primary"} "YO"]} "One"]
+    ;   [sidebar-nav-item {:href "#"} "Two"]
+    ;   [sidebar-nav-item {:href "#"} #_[:i {:class "c-sidebar-nav-icon cil-puzzle"}] " Three"]]]
+     ]
+    [:button {:class "c-sidebar-minimizer c-brand-minimizer", :type "button"}]]]))
+
+(defn footer []
+  [:nav.c-footer.navbar-dark.bg-secondary.mt-4
+   [:div.col
+    [:a.navbar-brand {:href (path :admin {})} "leihs-admin"]
+    [version-component]]
+   [:div.col
+    [:a.navbar-text
+     {:href (path :status)} "Admin-Status-Info"]]
+   [state/debug-toggle-navbar-component]
+   [:form.form-inline {:style {:margin-left "0.5em"
+                               :margin-right "0.5em"}}
+    [:label.navbar-text
+     [:a {:href (path :requests)}
+      [requests/icon-component]
+      " Requests "]]]])
+
 (defn current-page []
-  [:<>
-   [:div.container-fluid
+  [:div {:class "c-app"}
+   [sidebar]
+   [:div {:class "c-wrapper"}
     [leihs.core.requests.modal/modal-component]
     [leihs.admin.common.http-client.modals/modal-component]
-    [:div
-      (if-let [page (:page @routing/state*)]
+
+    
+     [:div.c-body
+      [:main.c-main
+       [:div.container-fluid 
+        (if-let [page (:page @routing/state*)]
         [page]
         [:div.page
-        [:h1.text-danger "Error 404 - There is no handler for the current path defined."]])]
-    [state/debug-component]]
-   [:nav.footer.navbar.navbar-expand-lg.navbar-dark.bg-secondary.col.mt-4
-    [:div.col
-     [:a.navbar-brand {:href (path :admin {})} "leihs-admin"]
-     [version-component]]
-    [:div.col
-     [:a.navbar-text
-      {:href (path :status)} "Admin-Status-Info"]]
-    [state/debug-toggle-navbar-component]
-    [:form.form-inline {:style {:margin-left "0.5em"
-                                :margin-right "0.5em"}}
-     [:label.navbar-text
-      [:a {:href (path :requests)}
-       [requests/icon-component]
-       " Requests "]]]]])
+          [:h1.text-danger "Error 404 - There is no handler for the current path defined."]])]
+     
+    [state/debug-component]]]
+    
+   [footer]]])
+
+
 
 (defn mount []
   (when-let [app (.getElementById js/document "app")]
     (reagent/render [current-page] app))
   (accountant/dispatch-current!))
+

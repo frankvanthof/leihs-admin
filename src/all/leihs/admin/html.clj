@@ -21,7 +21,10 @@
 
 (defn include-site-css []
   (hiccup.page/include-css
-    (cache-buster/cache-busted-path "/admin/css/site.css")))
+    (cache-buster/cache-busted-path "/admin/css/site.css")
+    #_(cache-buster/cache-busted-path "/admin/css/core-ui-sidebar.css")
+    #_(cache-buster/cache-busted-path "/admin/css/coreui.css")
+   ))
 
 (defn include-font-css []
   (hiccup.page/include-css
