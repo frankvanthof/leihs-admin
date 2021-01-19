@@ -4,6 +4,9 @@
     [reagent.ratom :as ratom :refer [reaction]]
     )
   (:require
+    [leihs.core.auth.core :as auth]
+    [leihs.admin.resources.breadcrumbs :as breadcrumbs]
+    [leihs.admin.resources.inventory-pools.breadcrumbs :as breadcrumbs-inventory-pools] 
     [leihs.core.anti-csrf.front :as anti-csrf]
     [leihs.core.core :refer [keyword str presence]]
     [leihs.core.requests.core :as requests]
@@ -24,13 +27,13 @@
     [reagent.core :as reagent]
     ))
 
-(defn li-navitem [handler-key display-string]
+#_(defn li-navitem [handler-key display-string]
   (let [active? (= (-> @routing/state* :handler-key) handler-key)]
     [:li.nav-item
      {:class (if active? "active" "")}
      [:a.nav-link {:href (path handler-key)} display-string]]))
 
-(defn li-admin-navitem []
+#_(defn li-admin-navitem []
   (let [active? (boolean
                   (when-let [current-path (-> @routing/state* :path)]
                     (re-matches #"^/admin.*$" current-path)))]
@@ -115,15 +118,16 @@
     [:li {:class "nav-item"}
      [:a {:href "/docs/3.1//dependencies.html", :class "nav-link"}
       [:i {:class "nav-icon fas fa-handshake"}]
-      [:p "Dependencies &amp; Plugins\n                "]]]
+      [:p "Dependencies & Plugins"]]]
     [:li {:class "nav-item"}
      [:a {:href "/docs/3.1//layout.html", :class "nav-link"}
       [:i {:class "nav-icon fas fa-copy"}]
-      [:p]]]
+      [:p "Layout"]]]
     [:li {:class "nav-item menu-is-opening menu-open"}
      [:a {:href "/docs/3.1//components", :class "nav-link active"}
       [:i {:class "nav-icon fas fa-th"}]
       [:p
+       "Components"
        [:i {:class "right fas fa-angle-left"}]]]
      [:ul {:class "nav nav-treeview", :style {:display "block"}}
       [:li {:class "nav-item"}
@@ -245,78 +249,100 @@
       [:i {:class "nav-icon fas fa-file-contract"}]
       [:p]]]]])
 
-(defn sidebar []
+(defn main-sidebar []
   (let [open? true]
-    [:aside {:class "main-sidebar sidebar-dark-primary elevation-4"}
+    [:aside {:class "main-sidebar sidebar-dark-primary XXXelevation-4"}
      [:nav.sidebar {:class (str "sidebar " (when open? "XXXc-sidebar-show"))}
-      [fake-lte-sidebar-content]
+
+      #_[fake-lte-sidebar-content]
+      
+      [:nav {:class "mt-2"}
+       [:ul {:class "nav nav-pills nav-sidebar nav-child-indent flex-column", :data-widget "treeview", :role "menu"}
+        [:li {:class "nav-item menu-is-opening menu-open"}
+         [:a {:href "/docs/3.1//components", :class "nav-link active"}
+          [:i {:class "nav-icon fas fa-th"}]
+          [:p "Components"
+           [:i {:class "right fas fa-angle-left"}]]]
+         [:ul {:class "nav nav-treeview", :style {:display "block"}}
+          
+          [breadcrumbs/li :admin-buildings " Buildings " {} {} :authorizers [auth/admin-scopes?]]
+          
+          [breadcrumbs-inventory-pools/inventory-pools-li]
+          
+          
+          #_[:li {:class "nav-item"}
+           [:a {:href "/docs/3.1//components/main-header.html", :class "nav-link"}
+            [:i {:class "far fa-circle nav-icon"}]
+            [:p "Main Header"]]]
+          ]]]]
+
       #_[:div {:class "XXXsidebar" #_:style #_{:background "#1b261a"}}
 
-       [:ul {:class "nav flex-column mb-2"}
+         [:ul {:class "nav flex-column mb-2"}
 
-        [:li {:class "XXXc-sidebar-nav-title bg-light text-dark"} "Manage"]
+          [:li {:class "XXXc-sidebar-nav-title bg-light text-dark"} "Manage"]
 
-        [sidebar-nav-item {:href "#", :active false, :icon "fas fa-cubes"} "Inventory-Pools"]
+          [sidebar-nav-item {:href "#", :active false, :icon "fas fa-cubes"} "Inventory-Pools"]
     ;  [sidebar-nav-item {:href "#", :class "" :active true, :icon "fas fa-cube"} ]
-        [:li.XXXc-sidebar-nav-dropdown.XXXc-show
-         [:a (merge {:class (str "XXXc-sidebar-nav-link nav-dropdown-toggle XXXc-active font-bold")})
-          [:<> [:i {:class (str "XXXc-sidebar-nav-icon fas fa-cube")}] " "]
-          "ITZ-Ausstellungen"]
-         [:div.pl-5
-          [sidebar-nav-item {:href "#", :icon "fas fa-user-friends"} "Users"]
-          [sidebar-nav-item {:href "#", :icon "fas fa-users"} "Groups"]
-          [sidebar-nav-item {:href "#", :icon "fas fa-hands-helping"} "Delegations"]
-          [sidebar-nav-item {:href "#", :icon "fas fa-hands"} "Entitlement-Groups"]
-          [sidebar-nav-item {:href "#", :icon "fas fa-list"} "Mail Templates"]
-          [sidebar-nav-item {:href "#", :icon "fas fa-list"} "Fields"]]]]]
+          [:li.XXXc-sidebar-nav-dropdown.XXXc-show
+           [:a (merge {:class (str "XXXc-sidebar-nav-link nav-dropdown-toggle XXXc-active font-bold")})
+            [:<> [:i {:class (str "XXXc-sidebar-nav-icon fas fa-cube")}] " "]
+            "ITZ-Ausstellungen"]
+           [:div.pl-5
+            [sidebar-nav-item {:href "#", :icon "fas fa-user-friends"} "Users"]
+            [sidebar-nav-item {:href "#", :icon "fas fa-users"} "Groups"]
+            [sidebar-nav-item {:href "#", :icon "fas fa-hands-helping"} "Delegations"]
+            [sidebar-nav-item {:href "#", :icon "fas fa-hands"} "Entitlement-Groups"]
+            [sidebar-nav-item {:href "#", :icon "fas fa-list"} "Mail Templates"]
+            [sidebar-nav-item {:href "#", :icon "fas fa-list"} "Fields"]]]]]
 
       #_[:div {:class "XXXc-sidebar XXXc-sidebar-dark XXXc-sidebar-show" #_:style #_{:background "#1b261a"}}
-       
-       [:ul {:class "nav flex-column mb-2"}
 
-        [:li {:class "XXXc-sidebar-nav-title"} "Reports"]
+         [:ul {:class "nav flex-column mb-2"}
 
-        [sidebar-nav-item {:href "#", :icon "fas fa-chart-line"} "Statistics"]
-        [sidebar-nav-item {:href "#", :icon "fas fa-cube"} "Inventory"]
-        [sidebar-nav-item {:href "#", :icon "fas fa-thermometer-half"} "Status Info"]
-        [sidebar-dropdown "Audits" {:icon "fas fa-history" :open false}
-         [:<>
-          [sidebar-nav-item {:href "#", :icon "fas fa-history"} "Legacy"]
-          [sidebar-nav-item {:href "#", :icon "fas fa-save"} "Audited Changes"]
-          [sidebar-nav-item {:href "#", :icon "fas fa-exchange-alt"} "Audited Requests"]
-          #_[sidebar-nav-item {:href "#"} " Three"]]]
+          [:li {:class "XXXc-sidebar-nav-title"} "Reports"]
 
-        [:li {:class "XXXc-sidebar-nav-title"} "Configuration"]
+          [sidebar-nav-item {:href "#", :icon "fas fa-chart-line"} "Statistics"]
+          [sidebar-nav-item {:href "#", :icon "fas fa-cube"} "Inventory"]
+          [sidebar-nav-item {:href "#", :icon "fas fa-thermometer-half"} "Status Info"]
+          [sidebar-dropdown "Audits" {:icon "fas fa-history" :open false}
+           [:<>
+            [sidebar-nav-item {:href "#", :icon "fas fa-history"} "Legacy"]
+            [sidebar-nav-item {:href "#", :icon "fas fa-save"} "Audited Changes"]
+            [sidebar-nav-item {:href "#", :icon "fas fa-exchange-alt"} "Audited Requests"]
+            #_[sidebar-nav-item {:href "#"} " Three"]]]
 
-        [sidebar-nav-item {:href "#", :icon "fas fa-list"} "Fields"]
-        [sidebar-nav-item {:href "#", :icon "fas fa-list"} "Buildings"]
-        [sidebar-nav-item {:href "#", :icon "fas fa-list"} "Rooms"]
-        [sidebar-nav-item {:href "#", :icon "fas fa-list"} "Suppliers"]
-        [sidebar-nav-item {:href "#", :icon "fas fa-list"} "Languages"]
-        [sidebar-nav-item {:href "#", :icon "fas fa-list"} "Mail Templates"]
+          [:li {:class "XXXc-sidebar-nav-title"} "Configuration"]
+
+          [sidebar-nav-item {:href "#", :icon "fas fa-list"} "Fields"]
+          [sidebar-nav-item {:href "#", :icon "fas fa-list"} "Buildings"]
+          [sidebar-nav-item {:href "#", :icon "fas fa-list"} "Rooms"]
+          [sidebar-nav-item {:href "#", :icon "fas fa-list"} "Suppliers"]
+          [sidebar-nav-item {:href "#", :icon "fas fa-list"} "Languages"]
+          [sidebar-nav-item {:href "#", :icon "fas fa-list"} "Mail Templates"]
 
 
-        [:li {:class "XXXc-sidebar-nav-title"} "Administration"]
-        [sidebar-nav-item {:href "#", :icon "fas fa-user-friends"} "Users"]
-        [sidebar-nav-item {:href "#", :icon "fas fa-users"} "Groups"]
-        [sidebar-nav-item {:href "#", :icon "fas fa-user-astronaut"} "System-Admins"]
-        [sidebar-nav-item {:href "#", :icon "fas fa-id-card"} "Authentication-Systems"]
+          [:li {:class "XXXc-sidebar-nav-title"} "Administration"]
+          [sidebar-nav-item {:href "#", :icon "fas fa-user-friends"} "Users"]
+          [sidebar-nav-item {:href "#", :icon "fas fa-users"} "Groups"]
+          [sidebar-nav-item {:href "#", :icon "fas fa-user-astronaut"} "System-Admins"]
+          [sidebar-nav-item {:href "#", :icon "fas fa-id-card"} "Authentication-Systems"]
 
-        [sidebar-dropdown "Settings" {:open true}
-         [:<>
-          [sidebar-nav-item {:href "#", :icon "fas fa-globe"} "Languages"]
-          [sidebar-nav-item {:href "#", :icon "fas fa-box-open"} "Miscellaneous"]
-          [sidebar-nav-item {:href "#", :icon "fas fa-paper-plane"} "SMTP"]
-          [sidebar-nav-item {:href "#", :icon "fas fa-shield-alt"} "System & Security"]
-          #_[sidebar-nav-item {:href "#"} " Three"]]]
+          [sidebar-dropdown "Settings" {:open true}
+           [:<>
+            [sidebar-nav-item {:href "#", :icon "fas fa-globe"} "Languages"]
+            [sidebar-nav-item {:href "#", :icon "fas fa-box-open"} "Miscellaneous"]
+            [sidebar-nav-item {:href "#", :icon "fas fa-paper-plane"} "SMTP"]
+            [sidebar-nav-item {:href "#", :icon "fas fa-shield-alt"} "System & Security"]
+            #_[sidebar-nav-item {:href "#"} " Three"]]]
 
     ; [sidebar-dropdown "A Menu" {}
     ;  [:<>
     ;   [sidebar-nav-item {:href "#" :badge [:span {:class "badge badge-primary"} "YO"]} "One"]
     ;   [sidebar-nav-item {:href "#"} "Two"]
     ;   [sidebar-nav-item {:href "#"} #_[:i {:class "XXXc-sidebar-nav-icon cil-puzzle"}] " Three"]]]
-        ]
-       [:button {:class "XXXc-sidebar-minimizer XXXc-brand-minimizer", :type "button"}]]]]))
+          ]
+         [:button {:class "XXXc-sidebar-minimizer XXXc-brand-minimizer", :type "button"}]]]]))
 
 (defn footer []
   [:nav.XXXc-footer.navbar-dark.bg-secondary.mt-4
@@ -335,24 +361,22 @@
       " Requests "]]]])
 
 (defn current-page []
-  [:div {:class "XXXc-app"}
-   [sidebar]
-   [:div {:class "XXXc-wrapper"}
-    [leihs.core.requests.modal/modal-component]
-    [leihs.admin.common.http-client.modals/modal-component]
+  [:div {:class "ui-body sidebar-mini layout-fixed layout-navbar-fixed"}
+   [:div {:class "wrapper"}
+    [main-sidebar]
+    [:main {:class "content-wrapper px-4 py-2"}
+     [leihs.core.requests.modal/modal-component]
+     [leihs.admin.common.http-client.modals/modal-component]
 
-    
-     [:div.XXXc-body
-      [:main.XXXc-main
-       [:div.container-fluid 
-        (if-let [page (:page @routing/state*)]
+     [:div.container-fluid
+      (if-let [page (:page @routing/state*)]
         [page]
         [:div.page
-          [:h1.text-danger "Error 404 - There is no handler for the current path defined."]])]
-     
-    [state/debug-component]]]
-    
-   [footer]]])
+         [:h1.text-danger "Error 404 - There is no handler for the current path defined."]])]
+
+     [state/debug-component]
+
+     [footer]]]])
 
 
 
