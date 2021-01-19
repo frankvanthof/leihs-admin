@@ -84,12 +84,12 @@
         icon (:icon props)
         open? (cond (contains? props :open) (:open props) :else true)
         ]
-    [:li (merge aprops {:class (str "c-sidebar-nav-dropdown " (when open? " c-show ") (:class aprops))} )
-     [:a (merge {:class (str "c-sidebar-nav-link nav-dropdown-toggle " (when active? "c-active"))})
-      (when icon [:<> [:i {:class (str "c-sidebar-nav-icon " icon)}] " "])
+    [:li (merge aprops {:class (str "XXXc-sidebar-nav-dropdown " (when open? " XXXc-show ") (:class aprops))} )
+     [:a (merge {:class (str "XXXc-sidebar-nav-link nav-dropdown-toggle " (when active? "XXXc-active"))})
+      (when icon [:<> [:i {:class (str "XXXc-sidebar-nav-icon " icon)}] " "])
       title]
      (when (seq children)
-       [:ul {:class "c-sidebar-nav-dropdown-items"}
+       [:ul {:class "XXXc-sidebar-nav-dropdown-items"}
         children])]))
   
 
@@ -99,85 +99,227 @@
         href (:href props)
         icon (:icon props)
         badge (:badge props)]
-    [:li (merge nprops {:class (str "c-sidebar-nav-item " (:class nprops))})
-     [:a (merge {:class (str "c-sidebar-nav-link " (when active? " c-active ")) :href href})
-      (when icon [:<> [:i {:class (str "c-sidebar-nav-icon " icon)}] " "])
+    [:li (merge nprops {:class (str "XXXc-sidebar-nav-item " (:class nprops))})
+     [:a (merge {:class (str "XXXc-sidebar-nav-link " (when active? " XXXc-active ")) :href href})
+      (when icon [:<> [:i {:class (str "XXXc-sidebar-nav-icon " icon)}] " "])
       children
       (when badge badge)]]))
 
+(defn fake-lte-sidebar-content []
+  [:nav {:class "mt-2"}
+   [:ul {:class "nav nav-pills nav-sidebar nav-child-indent flex-column", :data-widget "treeview", :role "menu"}
+    [:li {:class "nav-item"}
+     [:a {:href "/docs/3.1//index.html", :class "nav-link"}
+      [:i {:class "nav-icon fas fa-microchip"}]
+      [:p "Installation"]]]
+    [:li {:class "nav-item"}
+     [:a {:href "/docs/3.1//dependencies.html", :class "nav-link"}
+      [:i {:class "nav-icon fas fa-handshake"}]
+      [:p "Dependencies &amp; Plugins\n                "]]]
+    [:li {:class "nav-item"}
+     [:a {:href "/docs/3.1//layout.html", :class "nav-link"}
+      [:i {:class "nav-icon fas fa-copy"}]
+      [:p]]]
+    [:li {:class "nav-item menu-is-opening menu-open"}
+     [:a {:href "/docs/3.1//components", :class "nav-link active"}
+      [:i {:class "nav-icon fas fa-th"}]
+      [:p
+       [:i {:class "right fas fa-angle-left"}]]]
+     [:ul {:class "nav nav-treeview", :style {:display "block"}}
+      [:li {:class "nav-item"}
+       [:a {:href "/docs/3.1//components/main-header.html", :class "nav-link"}
+        [:i {:class "far fa-circle nav-icon"}]
+        [:p "Main Header"]]]
+      [:li {:class "nav-item"}
+       [:a {:href "/docs/3.1//components/main-sidebar.html", :class "nav-link active"}
+        [:i {:class "far fa-circle nav-icon"}]
+        [:p "Main Sidebar"]]]
+      [:li {:class "nav-item"}
+       [:a {:href "/docs/3.1//components/control-sidebar.html", :class "nav-link"}
+        [:i {:class "far fa-circle nav-icon"}]
+        [:p "Control Sidebar"]]]
+      [:li {:class "nav-item"}
+       [:a {:href "/docs/3.1//components/cards.html", :class "nav-link"}
+        [:i {:class "far fa-circle nav-icon"}]
+        [:p "Card"]]]
+      [:li {:class "nav-item"}
+       [:a {:href "/docs/3.1//components/boxes.html", :class "nav-link"}
+        [:i {:class "far fa-circle nav-icon"}]
+        [:p "Small-/ Info-Box"]]]
+      [:li {:class "nav-item"}
+       [:a {:href "/docs/3.1//components/direct-chat.html", :class "nav-link"}
+        [:i {:class "far fa-circle nav-icon"}]
+        [:p "Direct Chat"]]]
+      [:li {:class "nav-item"}
+       [:a {:href "/docs/3.1//components/timeline.html", :class "nav-link"}
+        [:i {:class "far fa-circle nav-icon"}]
+        [:p "Timeline"]]]
+      [:li {:class "nav-item"}
+       [:a {:href "/docs/3.1//components/ribbons.html", :class "nav-link"}
+        [:i {:class "far fa-circle nav-icon"}]
+        [:p "Ribbons"]]]
+      [:li {:class "nav-item"}
+       [:a {:href "/docs/3.1//components/miscellaneous.html", :class "nav-link"}
+        [:i {:class "far fa-circle nav-icon"}]
+        [:p "Miscellaneous"]]]
+      [:li {:class "nav-item"}
+       [:a {:href "/docs/3.1//components/plugins.html", :class "nav-link"}
+        [:i {:class "far fa-circle nav-icon"}]
+        [:p "Plugins"]]]]]
+    [:li {:class "nav-item"}
+     [:a {:href "/docs/3.1//javascript", :class "nav-link"}
+      [:i {:class "nav-icon fas fa-code"}]
+      [:p
+       [:i {:class "right fas fa-angle-left"}]]]
+     [:ul {:class "nav nav-treeview"}
+      [:li {:class "nav-item"}
+       [:a {:href "/docs/3.1//javascript/layout.html", :class "nav-link"}
+        [:i {:class "far fa-circle nav-icon"}]
+        [:p "Layout"]]]
+      [:li {:class "nav-item"}
+       [:a {:href "/docs/3.1//javascript/push-menu.html", :class "nav-link"}
+        [:i {:class "far fa-circle nav-icon"}]
+        [:p "Push Menu"]]]
+      [:li {:class "nav-item"}
+       [:a {:href "/docs/3.1//javascript/treeview.html", :class "nav-link"}
+        [:i {:class "far fa-circle nav-icon"}]
+        [:p "Treeview"]]]
+      [:li {:class "nav-item"}
+       [:a {:href "/docs/3.1//javascript/card-widget.html", :class "nav-link"}
+        [:i {:class "far fa-circle nav-icon"}]
+        [:p "Card Widget"]]]
+      [:li {:class "nav-item"}
+       [:a {:href "/docs/3.1//javascript/card-refresh.html", :class "nav-link"}
+        [:i {:class "far fa-circle nav-icon"}]
+        [:p "CardRefresh"]]]
+      [:li {:class "nav-item"}
+       [:a {:href "/docs/3.1//javascript/control-sidebar.html", :class "nav-link"}
+        [:i {:class "far fa-circle nav-icon"}]
+        [:p "Control Sidebar"]]]
+      [:li {:class "nav-item"}
+       [:a {:href "/docs/3.1//javascript/direct-chat.html", :class "nav-link"}
+        [:i {:class "far fa-circle nav-icon"}]
+        [:p "Direct Chat"]]]
+      [:li {:class "nav-item"}
+       [:a {:href "/docs/3.1//javascript/todo-list.html", :class "nav-link"}
+        [:i {:class "far fa-circle nav-icon"}]
+        [:p "Todo List"]]]
+      [:li {:class "nav-item"}
+       [:a {:href "/docs/3.1//javascript/toasts.html", :class "nav-link"}
+        [:i {:class "far fa-circle nav-icon"}]
+        [:p "Toasts"]]]
+      [:li {:class "nav-item"}
+       [:a {:href "/docs/3.1//javascript/sidebar-search.html", :class "nav-link"}
+        [:i {:class "far fa-circle nav-icon"}]
+        [:p "Sidebar Search"]]]
+      [:li {:class "nav-item"}
+       [:a {:href "/docs/3.1//javascript/expandable-tables.html", :class "nav-link"}
+        [:i {:class "far fa-circle nav-icon"}]
+        [:p "Expandable Tables"]]]
+      [:li {:class "nav-item"}
+       [:a {:href "/docs/3.1//javascript/iframe.html", :class "nav-link"}
+        [:i {:class "far fa-circle nav-icon"}]
+        [:p "IFrame"]]]]]
+    [:li {:class "nav-item"}
+     [:a {:href "/docs/3.1//browser-support.html", :class "nav-link"}
+      [:i {:class "nav-icon fab fa-chrome"}]
+      [:p "Browser Support\n                "]]]
+    [:li {:class "nav-item"}
+     [:a {:href "/docs/3.1//implementations.html", :class "nav-link"}
+      [:i {:class "nav-icon fas fa-bookmark"}]
+      [:p]]]
+    [:li {:class "nav-item"}
+     [:a {:href "/docs/3.1//additional-styles.html", :class "nav-link"}
+      [:i {:class "nav-icon fas fa-mortar-pestle"}]
+      [:p "Additional Styles\n                "]]]
+    [:li {:class "nav-item"}
+     [:a {:href "/docs/3.1//upgrade-guide.html", :class "nav-link"}
+      [:i {:class "nav-icon fas fa-hand-point-up"}]
+      [:p "Upgrade Guide\n                "]]]
+    [:li {:class "nav-item"}
+     [:a {:href "/docs/3.1//faq.html", :class "nav-link"}
+      [:i {:class "nav-icon fas fa-question-circle"}]
+      [:p]]]
+    [:li {:class "nav-item"}
+     [:a {:href "/docs/3.1//license.html", :class "nav-link"}
+      [:i {:class "nav-icon fas fa-file-contract"}]
+      [:p]]]]])
+
 (defn sidebar []
   (let [open? true]
-    [:nav.c-sidebar {:class (when open? "c-sidebar-show")}
-   [:div {:class "c-sidebar c-sidebar-light c-sidebar-show" #_:style #_{:background "#1b261a"}}
+    [:aside {:class "main-sidebar sidebar-dark-primary elevation-4"}
+     [:nav.sidebar {:class (str "sidebar " (when open? "XXXc-sidebar-show"))}
+      [fake-lte-sidebar-content]
+      #_[:div {:class "XXXsidebar" #_:style #_{:background "#1b261a"}}
 
-    [:ul {:class "c-sidebar-nav"}
+       [:ul {:class "nav flex-column mb-2"}
 
-     [:li {:class "c-sidebar-nav-title bg-light text-dark"} "Manage"]
+        [:li {:class "XXXc-sidebar-nav-title bg-light text-dark"} "Manage"]
 
-     [sidebar-nav-item {:href "#", :active false, :icon "fas fa-cubes"} "Inventory-Pools"]
+        [sidebar-nav-item {:href "#", :active false, :icon "fas fa-cubes"} "Inventory-Pools"]
     ;  [sidebar-nav-item {:href "#", :class "" :active true, :icon "fas fa-cube"} ]
-     [:li.c-sidebar-nav-dropdown.c-show
-      [:a (merge {:class (str "c-sidebar-nav-link nav-dropdown-toggle c-active font-bold")})
-       [:<> [:i {:class (str "c-sidebar-nav-icon fas fa-cube")}] " "]
-       "ITZ-Ausstellungen"]
-      [:div.pl-5
-       [sidebar-nav-item {:href "#", :icon "fas fa-user-friends"} "Users"]
-       [sidebar-nav-item {:href "#", :icon "fas fa-users"} "Groups"]
-       [sidebar-nav-item {:href "#", :icon "fas fa-hands-helping"} "Delegations"]
-       [sidebar-nav-item {:href "#", :icon "fas fa-hands"} "Entitlement-Groups"]
-       [sidebar-nav-item {:href "#", :icon "fas fa-list"} "Mail Templates"]
-       [sidebar-nav-item {:href "#", :icon "fas fa-list"} "Fields"]
-       ]]]]
+        [:li.XXXc-sidebar-nav-dropdown.XXXc-show
+         [:a (merge {:class (str "XXXc-sidebar-nav-link nav-dropdown-toggle XXXc-active font-bold")})
+          [:<> [:i {:class (str "XXXc-sidebar-nav-icon fas fa-cube")}] " "]
+          "ITZ-Ausstellungen"]
+         [:div.pl-5
+          [sidebar-nav-item {:href "#", :icon "fas fa-user-friends"} "Users"]
+          [sidebar-nav-item {:href "#", :icon "fas fa-users"} "Groups"]
+          [sidebar-nav-item {:href "#", :icon "fas fa-hands-helping"} "Delegations"]
+          [sidebar-nav-item {:href "#", :icon "fas fa-hands"} "Entitlement-Groups"]
+          [sidebar-nav-item {:href "#", :icon "fas fa-list"} "Mail Templates"]
+          [sidebar-nav-item {:href "#", :icon "fas fa-list"} "Fields"]]]]]
 
-   [:div {:class "c-sidebar c-sidebar-dark c-sidebar-show" #_:style #_{:background "#1b261a"}}
-    [:ul {:class "c-sidebar-nav"}
+      #_[:div {:class "XXXc-sidebar XXXc-sidebar-dark XXXc-sidebar-show" #_:style #_{:background "#1b261a"}}
+       
+       [:ul {:class "nav flex-column mb-2"}
 
-     [:li {:class "c-sidebar-nav-title"} "Reports"]
+        [:li {:class "XXXc-sidebar-nav-title"} "Reports"]
 
-     [sidebar-nav-item {:href "#", :icon "fas fa-chart-line"} "Statistics"]
-     [sidebar-nav-item {:href "#", :icon "fas fa-cube"} "Inventory"]
-     [sidebar-nav-item {:href "#", :icon "fas fa-thermometer-half"} "Status Info"]
-     [sidebar-dropdown "Audits" {:icon "fas fa-history" :open false}
-      [:<>
-       [sidebar-nav-item {:href "#", :icon "fas fa-history"} "Legacy"]
-       [sidebar-nav-item {:href "#", :icon "fas fa-save"} "Audited Changes"]
-       [sidebar-nav-item {:href "#", :icon "fas fa-exchange-alt"} "Audited Requests"]
-       #_[sidebar-nav-item {:href "#"} " Three"]]]
+        [sidebar-nav-item {:href "#", :icon "fas fa-chart-line"} "Statistics"]
+        [sidebar-nav-item {:href "#", :icon "fas fa-cube"} "Inventory"]
+        [sidebar-nav-item {:href "#", :icon "fas fa-thermometer-half"} "Status Info"]
+        [sidebar-dropdown "Audits" {:icon "fas fa-history" :open false}
+         [:<>
+          [sidebar-nav-item {:href "#", :icon "fas fa-history"} "Legacy"]
+          [sidebar-nav-item {:href "#", :icon "fas fa-save"} "Audited Changes"]
+          [sidebar-nav-item {:href "#", :icon "fas fa-exchange-alt"} "Audited Requests"]
+          #_[sidebar-nav-item {:href "#"} " Three"]]]
 
-     [:li {:class "c-sidebar-nav-title"} "Configuration"]
+        [:li {:class "XXXc-sidebar-nav-title"} "Configuration"]
 
-     [sidebar-nav-item {:href "#", :icon "fas fa-list"} "Fields"]
-     [sidebar-nav-item {:href "#", :icon "fas fa-list"} "Buildings"]
-     [sidebar-nav-item {:href "#", :icon "fas fa-list"} "Rooms"]
-     [sidebar-nav-item {:href "#", :icon "fas fa-list"} "Suppliers"]
-     [sidebar-nav-item {:href "#", :icon "fas fa-list"} "Languages"]
-     [sidebar-nav-item {:href "#", :icon "fas fa-list"} "Mail Templates"]
+        [sidebar-nav-item {:href "#", :icon "fas fa-list"} "Fields"]
+        [sidebar-nav-item {:href "#", :icon "fas fa-list"} "Buildings"]
+        [sidebar-nav-item {:href "#", :icon "fas fa-list"} "Rooms"]
+        [sidebar-nav-item {:href "#", :icon "fas fa-list"} "Suppliers"]
+        [sidebar-nav-item {:href "#", :icon "fas fa-list"} "Languages"]
+        [sidebar-nav-item {:href "#", :icon "fas fa-list"} "Mail Templates"]
 
 
-     [:li {:class "c-sidebar-nav-title"} "Administration"]
-     [sidebar-nav-item {:href "#", :icon "fas fa-user-friends"} "Users"]
-     [sidebar-nav-item {:href "#", :icon "fas fa-users"} "Groups"]
-     [sidebar-nav-item {:href "#", :icon "fas fa-user-astronaut"} "System-Admins"]
-     [sidebar-nav-item {:href "#", :icon "fas fa-id-card"} "Authentication-Systems"]
+        [:li {:class "XXXc-sidebar-nav-title"} "Administration"]
+        [sidebar-nav-item {:href "#", :icon "fas fa-user-friends"} "Users"]
+        [sidebar-nav-item {:href "#", :icon "fas fa-users"} "Groups"]
+        [sidebar-nav-item {:href "#", :icon "fas fa-user-astronaut"} "System-Admins"]
+        [sidebar-nav-item {:href "#", :icon "fas fa-id-card"} "Authentication-Systems"]
 
-     [sidebar-dropdown "Settings" {:open true}
-      [:<>
-       [sidebar-nav-item {:href "#", :icon "fas fa-globe"} "Languages"]
-       [sidebar-nav-item {:href "#", :icon "fas fa-box-open"} "Miscellaneous"]
-       [sidebar-nav-item {:href "#", :icon "fas fa-paper-plane"} "SMTP"]
-       [sidebar-nav-item {:href "#", :icon "fas fa-shield-alt"} "System & Security"]
-       #_[sidebar-nav-item {:href "#"} " Three"]]]
+        [sidebar-dropdown "Settings" {:open true}
+         [:<>
+          [sidebar-nav-item {:href "#", :icon "fas fa-globe"} "Languages"]
+          [sidebar-nav-item {:href "#", :icon "fas fa-box-open"} "Miscellaneous"]
+          [sidebar-nav-item {:href "#", :icon "fas fa-paper-plane"} "SMTP"]
+          [sidebar-nav-item {:href "#", :icon "fas fa-shield-alt"} "System & Security"]
+          #_[sidebar-nav-item {:href "#"} " Three"]]]
 
     ; [sidebar-dropdown "A Menu" {}
     ;  [:<>
     ;   [sidebar-nav-item {:href "#" :badge [:span {:class "badge badge-primary"} "YO"]} "One"]
     ;   [sidebar-nav-item {:href "#"} "Two"]
-    ;   [sidebar-nav-item {:href "#"} #_[:i {:class "c-sidebar-nav-icon cil-puzzle"}] " Three"]]]
-     ]
-    [:button {:class "c-sidebar-minimizer c-brand-minimizer", :type "button"}]]]))
+    ;   [sidebar-nav-item {:href "#"} #_[:i {:class "XXXc-sidebar-nav-icon cil-puzzle"}] " Three"]]]
+        ]
+       [:button {:class "XXXc-sidebar-minimizer XXXc-brand-minimizer", :type "button"}]]]]))
 
 (defn footer []
-  [:nav.c-footer.navbar-dark.bg-secondary.mt-4
+  [:nav.XXXc-footer.navbar-dark.bg-secondary.mt-4
    [:div.col
     [:a.navbar-brand {:href (path :admin {})} "leihs-admin"]
     [version-component]]
@@ -193,15 +335,15 @@
       " Requests "]]]])
 
 (defn current-page []
-  [:div {:class "c-app"}
+  [:div {:class "XXXc-app"}
    [sidebar]
-   [:div {:class "c-wrapper"}
+   [:div {:class "XXXc-wrapper"}
     [leihs.core.requests.modal/modal-component]
     [leihs.admin.common.http-client.modals/modal-component]
 
     
-     [:div.c-body
-      [:main.c-main
+     [:div.XXXc-body
+      [:main.XXXc-main
        [:div.container-fluid 
         (if-let [page (:page @routing/state*)]
         [page]
