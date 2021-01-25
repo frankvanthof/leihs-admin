@@ -37,6 +37,7 @@
     [leihs.admin.resources.inventory-pools.inventory-pool.users.main :as inventory-pool-users]
     [leihs.admin.resources.inventory-pools.inventory-pool.users.user.direct-roles.main :as inventory-pool-user-direct-roles]
     [leihs.admin.resources.inventory-pools.inventory-pool.users.user.create :as inventory-pool-user-create]
+    [leihs.admin.resources.inventory-pools.inventory-pool.users.user.edit :as inventory-pool-user-edit]
     [leihs.admin.resources.inventory-pools.inventory-pool.users.user.main :as inventory-pool-user]
     [leihs.admin.resources.inventory-pools.inventory-pool.users.user.roles.main :as inventory-pool-user-roles]
     [leihs.admin.resources.inventory-pools.inventory-pool.users.user.suspension.main :as inventory-pool-user-suspension]
@@ -114,6 +115,7 @@
    :inventory-pool-groups #'inventory-pool-groups/index-page
    :inventory-pool-user #'inventory-pool-user/page
    :inventory-pool-user-create #'inventory-pool-user-create/page
+   :inventory-pool-user-edit #'inventory-pool-user-edit/page
    :inventory-pool-user-direct-roles #'inventory-pool-user-direct-roles/page
    :inventory-pool-user-roles #'inventory-pool-user-roles/page
    :inventory-pool-user-suspension #'inventory-pool-user-suspension/page

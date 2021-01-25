@@ -49,6 +49,12 @@
    @route-params-default* {}
    :authorizers authorizers-default])
 
+(defn user-data-li []
+  [li :inventory-pool-user-edit [:span icons/edit " User Data "]
+   @route-params-default* {}
+   :button true
+   :authorizers authorizers-default])
+
 (defn direct-roles-li []
   [li :inventory-pool-user-direct-roles [:span icons/edit " Direct Roles "]
    @route-params-default* {}

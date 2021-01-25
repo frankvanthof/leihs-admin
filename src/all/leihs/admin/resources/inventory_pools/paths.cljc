@@ -38,6 +38,7 @@
           (branch ""
                   (param :user-id)
                   (leaf "" :inventory-pool-user)
+                  (leaf "/edit" :inventory-pool-user-edit)
                   (leaf "/roles" :inventory-pool-user-roles)
                   (leaf "/direct-roles" :inventory-pool-user-direct-roles)
                   (leaf "/groups-roles/" :inventory-pool-user-groups-roles)

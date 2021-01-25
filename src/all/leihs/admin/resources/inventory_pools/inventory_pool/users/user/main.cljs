@@ -181,7 +181,8 @@
   [:div.user-roles
    [breadcrumbs/nav-component
     @breadcrumbs/left*
-    [[breadcrumbs/direct-roles-li]
+    [[breadcrumbs/user-data-li]
+     [breadcrumbs/direct-roles-li]
      [breadcrumbs/suspension-li]]]
    [page-title-component]
    [:hr]

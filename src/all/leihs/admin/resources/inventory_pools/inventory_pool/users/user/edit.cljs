@@ -1,4 +1,4 @@
-(ns leihs.admin.resources.inventory-pools.inventory-pool.users.user.create
+(ns leihs.admin.resources.inventory-pools.inventory-pool.users.user.edit
   (:refer-clojure :exclude [str keyword])
   (:require-macros
     [reagent.ratom :as ratom :refer [reaction]]
@@ -12,6 +12,7 @@
     [leihs.admin.utils.misc :as front-shared :refer [wait-component]]
     [leihs.admin.state :as state]
     [leihs.admin.paths :as paths :refer [path]]
+    [leihs.admin.resources.users.user.core :as core :refer [user-id*]]
     [leihs.admin.resources.users.user.edit-core :as edit-core :refer [data*]]
     [leihs.admin.resources.users.user.edit-main :as edit-main]
     [leihs.admin.resources.inventory-pools.inventory-pool.core :as inventory-pool]
@@ -44,15 +45,12 @@
               (path :inventory-pool-user {:inventory-pool-id @inventory-pool/id*
                                           :user-id (-> resp :body :id)})))))))
 
-(defn clean [& _]
-  (reset! data* {}))
-
 (defn submit-component []
   [:div
    [:div.float-right
     [:button.btn.btn-primary
      icons/add
-     " Create "]]
+     " Save "]]
    [:div.clearfix]])
 
 (defn form-component []
@@ -65,11 +63,14 @@
    [submit-component]])
 
 (defn page []
-  [:div.user-create
-   [routing/hidden-state-component
-    {:did-mount clean}]
+  [:div.user-data
+   [routing/hidden-state-component {:did-mount edit-main/clean-and-fetch}]
    [breadcrumbs/nav-component
     (conj @breadcrumbs/left* [breadcrumbs/create-li])[]]
-   [:h1 "Create User in the Inventory-Pool " [inventory-pool/name-link-component]]
+   [:h1
+    "Edit User "
+    [core/name-component @data*]
+    " in the Inventory-Pool "
+    [inventory-pool/name-link-component]]
    [form-component]
    [edit-core/debug-component]])
