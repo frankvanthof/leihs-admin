@@ -42,22 +42,23 @@
                                      [:extended_info]
                                      (fn [json] (.stringify js/JSON (clj->js json)))))))))))
 
-(defn patch [& args]
-  (let [resp-chan (async/chan)
-        id (requests/send-off {:url (path :user {:user-id @user-id*})
-                               :method :patch
-                               :json-params  (-> @data*
-                                                 (update-in [:extended_info]
-                                                            (fn [s] (.parse js/JSON s))))}
-                              {:modal true
-                               :title "Update User"
-                               :handler-key :user-edit
-                               :retry-fn #'patch}
-                              :chan resp-chan)]
-    (go (let [resp (<! resp-chan)]
-          (when (= (:status resp) 200)
-            (accountant/navigate!
-              (path :user {:user-id @user-id*})))))))
+(defn patch
+  ([] (patch (path :user {:user-id @user-id*})))
+  ([redirect-to]
+   (let [resp-chan (async/chan)
+         id (requests/send-off {:url (path :user {:user-id @user-id*})
+                                :method :patch
+                                :json-params  (-> @data*
+                                                  (update-in [:extended_info]
+                                                             (fn [s] (.parse js/JSON s))))}
+                               {:modal true
+                                :title "Update User"
+                                :handler-key :user-edit
+                                :retry-fn #'patch}
+                               :chan resp-chan)]
+     (go (let [resp (<! resp-chan)]
+           (when (= (:status resp) 200)
+             (accountant/navigate! redirect-to)))))))
 
 (defn clean-and-fetch [& _]
   (reset! data* nil)
@@ -83,14 +84,17 @@
    ])
 
 
-(defn edit-form-component []
-  [:form.form
-   {:auto-complete :off
-    :on-submit (fn [e]
-                 (.preventDefault e)
-                 (patch))}
-   [inner-form-component]
-   [patch-submit-component]])
+(defn edit-form-component
+  ([]
+   (edit-form-component (fn [e]
+                          (.preventDefault e)
+                          (patch))))
+  ([on-submit]
+   [:form.form
+    {:auto-complete :off
+     :on-submit on-submit}
+    [inner-form-component]
+    [patch-submit-component]]))
 
 (defn page []
   [:div.user-edit

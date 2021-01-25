@@ -26,51 +26,22 @@
     [taoensso.timbre :as logging]
     ))
 
-
-(defn post [& args]
-  (let [resp-chan (async/chan)
-        id (requests/send-off {:url (path :users)
-                               :method :post
-                               :json-params  (-> @data*
-                                                 (update-in [:extended_info]
-                                                            (fn [s] (.parse js/JSON s))))}
-                              {:modal true
-                               :title "Update User"
-                               :handler-key :user-create
-                               :retry-fn #'post}
-                              :chan resp-chan)]
-    (go (let [resp (<! resp-chan)]
-          (when (= (:status resp) 200)
-            (accountant/navigate!
-              (path :inventory-pool-user {:inventory-pool-id @inventory-pool/id*
-                                          :user-id (-> resp :body :id)})))))))
-
-(defn submit-component []
-  [:div
-   [:div.float-right
-    [:button.btn.btn-primary
-     icons/add
-     " Save "]]
-   [:div.clearfix]])
-
-(defn form-component []
-  [:form.form
-   {:auto-complete :off
-    :on-submit (fn [e]
-                 (.preventDefault e)
-                 (post))}
-   [edit-main/inner-form-component]
-   [submit-component]])
-
 (defn page []
   [:div.user-data
    [routing/hidden-state-component {:did-mount edit-main/clean-and-fetch}]
    [breadcrumbs/nav-component
-    (conj @breadcrumbs/left* [breadcrumbs/create-li])[]]
+    (conj @breadcrumbs/left* [breadcrumbs/edit-li])[]]
    [:h1
     "Edit User "
     [core/name-component @data*]
     " in the Inventory-Pool "
     [inventory-pool/name-link-component]]
-   [form-component]
+   (if (not @data*)
+     [wait-component]
+     [edit-main/edit-form-component (fn [e]
+                                      (.preventDefault e)
+                                      (edit-main/patch
+                                        (path :inventory-pool-user
+                                              {:inventory-pool-id @inventory-pool/id*
+                                               :user-id @user-id*})))])
    [edit-core/debug-component]])
