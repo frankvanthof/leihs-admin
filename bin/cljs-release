@@ -1,5 +1,4 @@
-#!/usr/bin/env bash
-set -euo
+#!/usr/bin/env bash -eu
 
 ADMIN_DIR="$(dirname ${BASH_SOURCE})/.."
 cd "${ADMIN_DIR}"

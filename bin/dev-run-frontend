@@ -1,6 +1,4 @@
-#!/usr/bin/env bash
-
-set -euo
+#!/usr/bin/env bash -eu
 
 PROJECT_DIR="$(dirname ${BASH_SOURCE})/.."
 cd "${PROJECT_DIR}"

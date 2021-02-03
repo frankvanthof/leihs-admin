@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash -eu
 
 # NOTE: we need to start legacy webapp to log in!
 LEIHS_LEGACY_PORT=3210

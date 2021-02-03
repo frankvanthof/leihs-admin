@@ -1,6 +1,4 @@
-#!/usr/bin/env bash
-
-set -euo
+#!/usr/bin/env bash -eu
 
 ### VARIABLES and PWD #########################################################
 
