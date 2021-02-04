@@ -23,6 +23,9 @@
     [clojure.pprint :refer [pprint]]
     [accountant.core :as accountant]
     [reagent.dom :as rdom]
+    ;; ["/leihs-ui-client-side-external-react.js" :as UI]
+    ;; ["@leihs/ui" :as UI]
+    ["@leihs/ui/dist/components-external-react" :as UI]
     ))
 
 #_(defn li-navitem [handler-key display-string]
@@ -106,7 +109,7 @@
       children
       (when badge badge)]]))
 
-(defn fake-lte-sidebar-content []
+#_(defn fake-lte-sidebar-content []
   [:nav {:class "mt-2"}
    [:ul {:class "nav nav-pills nav-sidebar nav-child-indent flex-column", :data-widget "treeview", :role "menu"}
     [:li {:class "nav-item"}
@@ -247,14 +250,14 @@
       [:i {:class "nav-icon fas fa-file-contract"}]
       [:p]]]]])
 
-(defn main-sidebar []
+#_(defn main-sidebar []
   (let [open? true]
     [:aside {:class "main-sidebar sidebar-dark-primary XXXelevation-4"}
      [:nav.sidebar {:class (str "sidebar " (when open? "XXXc-sidebar-show"))}
 
-      #_[fake-lte-sidebar-content]
+      [fake-lte-sidebar-content]
       
-      [:nav {:class "mt-2"}
+      #_[:nav {:class "mt-2"}
        [:ul {:class "nav nav-pills nav-sidebar nav-child-indent flex-column", :data-widget "treeview", :role "menu"}
         [:li {:class "nav-item menu-is-opening menu-open"}
          [:a {:href "/docs/3.1//components", :class "nav-link active"}
@@ -341,6 +344,105 @@
     ;   [sidebar-nav-item {:href "#"} #_[:i {:class "XXXc-sidebar-nav-icon cil-puzzle"}] " Three"]]]
           ]
          [:button {:class "XXXc-sidebar-minimizer XXXc-brand-minimizer", :type "button"}]]]]))
+
+(defn fake-sidebar-menu-tree []
+  [{:id "manage"
+    :label "Manage"
+    :submenu
+    [{:id "pools", :label "Inventory-Pools"}
+     {:id "aa54457f-e470-4cca-bb12-516552e98777"
+      :label "ITZ-Ausstellungen"
+      :icon "Icon.AdminPool"
+      :active true
+      :submenu
+      [{:id "users"
+        :label "Users"
+        :icon "Icon.AdminUsers"}
+       {:id "groups"
+        :label "Groups"
+        :icon "Icon.AdminGroups"
+        :active true}
+       {:id "delegations"
+        :label "Delegations"
+        :icon "Icon.AdminDelegations"}
+       {:id "entitlement-groups"
+        :label "Entitlement-Groups"
+        :icon "Icon.AdminEntitlementGroups"}
+       {:id "mail-templates"
+        :label "Mail Templates"
+        :icon "Icon.AdminMenuItemSettings"}
+       {:id "fields"
+        :label "Fields"
+        :icon "Icon.AdminMenuItemSettings"}]}]}
+   {:id "reports"
+    :label "reports"
+    :submenu
+    [{:id "statistics"
+      :label "Statistics"
+      :icon "Icon.AdminStatistics"}
+     {:id "inventory"
+      :label "Inventory Export"
+      :icon "Icon.AdminExportInventory"}
+     {:id "status-info"
+      :label "Status Info"
+      :icon "Icon.AdminStatusInfo"}
+     {:id "audits"
+      :label "Audits"
+      :icon "Icon.AdminAudits"
+      :submenu
+      [{:id "legacy"
+        :label "Legacy"
+        :icon "Icon.AdminAuditsLegacy"}
+       {:id "audited-changes"
+        :label "Audited Changes"
+        :icon "Icon.AdminAuditedChanges"}
+       {:id "audited-requests"
+        :label "Audited Requests"
+        :icon "Icon.AdminAuditedRequests"}]}]}
+   {:id "configuration"
+    :label "Configuration"
+    :submenu
+    [{:label "Fields"
+      :icon "Icon.AdminMenuItemSettings"}
+     {:label "Buildings"
+      :icon "Icon.AdminMenuItemSettings"}
+     {:label "Rooms"
+      :icon "Icon.AdminMenuItemSettings"}
+     {:label "Suppliers"
+      :icon "Icon.AdminMenuItemSettings"}
+     {:label "Languages"
+      :icon "Icon.AdminMenuItemSettings"}
+     {:label "Mail Templates"
+      :icon "Icon.AdminMenuItemSettings"}]}
+   {:id "administration"
+    :label "Administration"
+    :submenu
+    [{:label "Users", :icon "Icon.AdminUsers"}
+     {:label "Groups", :icon "Icon.AdminGroups"}
+     {:label "System-Admins"
+      :icon "Icon.AdminSystemAdmins"}
+     {:label "Authentication-Systems"
+      :icon "Icon.AdminAuthSystems"}
+     {:id "settings"
+      :label "Settings"
+      :icon "Icon.AdminMenuItemSettings"
+      :submenu
+      [{:label "Languages"
+        :icon "Icon.AdminLanguages"}
+       {:label "Miscellaneous"
+        :icon "Icon.AdminSettingsMisc"}
+       {:label "SMTP"
+        :icon "Icon.AdminSettingsSMTP"}
+       {:label "System & Security"
+        :icon
+        "Icon.AdminSettingsSystemSecurity"}]}]}]
+)
+
+(defn main-sidebar []
+  [:> UI/Components.DebugProps "hoi"]
+  )
+(js/console.log UI)
+
 
 (defn footer []
   [:nav.XXXc-footer.navbar-dark.bg-secondary.mt-4
