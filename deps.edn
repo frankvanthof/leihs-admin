@@ -10,8 +10,7 @@
         reagent/reagent {:mvn/version "1.0.0"}
         timothypratley/patchin {:mvn/version "0.3.5"}
         venantius/accountant {:git/url "https://github.com/DrTom/accountant.git"
-                              :sha "db3d57ce78d3ec5ee17a9bee047ac43ac0e52b2b"}
-        }
+                              :sha "db3d57ce78d3ec5ee17a9bee047ac43ac0e52b2b"}}
  :aliases
  {:cljc-paths ["src/all" "shared-clj/src"]
   :cljs {:extra-deps {thheller/shadow-cljs {:mvn/version "2.11.13"}}}
