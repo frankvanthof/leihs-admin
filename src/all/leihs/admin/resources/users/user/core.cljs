@@ -24,8 +24,8 @@
 
 
 (defonce user-id*
-  (reaction (or  (-> @routing/state* :route-params :user-id)
-                ":user-id")))
+  (reaction (or (-> @routing/state* :route-params :user-id)
+                "00000000-0000-0000-0000-000000000000")))
 
 
 ;;; data ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -77,6 +77,7 @@
 
 (defn name-component [user]
   [:span
+   (logging/info 'user user)
    (when-not user
      (logging/error "use name-link-component when you call wo argument and :user-id is in the routes"))
    (let [p (path :user {:user-id (:id user)})

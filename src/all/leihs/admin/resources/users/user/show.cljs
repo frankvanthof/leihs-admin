@@ -24,21 +24,20 @@
     [reagent.core :as reagent]
     ))
 
-(defn page []
-  [:div.user
-   [routing/hidden-state-component
-    {:did-mount clean-and-fetch}]
-   [breadcrumbs/nav-component
-     @breadcrumbs/left*
-     [[breadcrumbs-common/email-li (:email @user-data*)]
-      [breadcrumbs/user-my-li]
-      [audited-changes-breadcrumbs/changes-li
-       :query-params {:pkey (:id @user-data*)
-                      :table "users"}]
-      [breadcrumbs/delete-li]
-      [breadcrumbs/edit-li]]]
-   [:h1 " User " (when @user-data* [user-core/name-component @user-data*])]
-   [:div.basic-properties.mb-2
+(defn breadcrumbs []
+  [breadcrumbs/nav-component
+   @breadcrumbs/left*
+   [[breadcrumbs-common/email-li (:email @user-data*)]
+    [breadcrumbs/user-my-li (or (:id @user-data*)
+                                (uuid "00000000-0000-0000-0000-000000000000"))]
+    [audited-changes-breadcrumbs/changes-li
+     :query-params {:pkey (:id @user-data*)
+                    :table "users"}]
+    [breadcrumbs/delete-li]
+    [breadcrumbs/edit-li]]])
+
+(defn basic-properties []
+ [:div.basic-properties.mb-2
     [:h3 "Basic User Properties"]
     [:div.row
      [:div.col-md-3.mb-1
@@ -52,24 +51,42 @@
      [:div.col-md
       [:hr]
       [:h3 "Account Properties"]
-      [user-core/account-properties-component @user-data*]]
-     ]]
-   [:div
-    [:hr]
-    [:h2 "Inventory Pools"]
-    [inventory-pools/table-component]]
-   [:div
-    [:hr]
-    [:h2 [:a {:href (path :groups {} {:including-user @user-id*})}
-          "Groups"]]
-    [groups/table-component]]
-   [:div.row
-    [:div.col-md
-     [:h2 "Extended User Info"]
-     (if-let [ext-info (some-> @user-data* :extended_info presence
-                               (->> (.parse js/JSON )) presence)]
-       [:div.bg-light [:pre (.stringify js/JSON ext-info nil 2)]]
-       [:div.alert.alert-secondary.text-center "There is no extended info available for this user."]
-       )]]
-   [user-core/debug-component]])
+      [user-core/account-properties-component @user-data*]]]])
+
+(defn inventory-pools []
+  [:div
+   [:hr]
+   [:h2 "Inventory Pools"]
+   [inventory-pools/table-component]] )
+
+(defn groups []
+  [:div
+   [:hr]
+   [:h2 [:a {:href (path :groups {} {:including-user @user-id*})}
+         "Groups"]]
+   [groups/table-component]])
+
+(defn extended-info []
+  [:div.row
+   [:div.col-md
+    [:h2 "Extended User Info"]
+    (if-let [ext-info (some-> @user-data* :extended_info presence
+                              (->> (.parse js/JSON )) presence)]
+      [:div.bg-light [:pre (.stringify js/JSON ext-info nil 2)]]
+      [:div.alert.alert-secondary.text-center
+       "There is no extended info available for this user."])]])
+
+(defn page []
+  [:div.user
+   [routing/hidden-state-component
+    {:did-mount clean-and-fetch}]
+   [breadcrumbs]
+   [:h1 " User " (when-not (empty? @user-data*)
+                   [user-core/name-component @user-data*])]
+   [basic-properties]
+   [inventory-pools]
+   [groups]
+   [extended-info]
+   [user-core/debug-component]
+   ])
 

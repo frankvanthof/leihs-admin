@@ -54,19 +54,19 @@
     [:h3 "Image / Avatar"]
     [edit-image/image-component]]
    [edit-core/personal-and-contact-form-component]
-   [edit-core/account-settings-form-component]
-   ])
+   [edit-core/account-settings-form-component]])
 
 
 (defn edit-form-component
-  ([]
-   (edit-form-component (fn [e]
-                          (.preventDefault e)
-                          (patch))))
-  ([on-submit]
-   [:form.form {:auto-complete :off, :on-submit on-submit}
-    [inner-form-component]
-    [patch-submit-component]]))
+  [& {:keys [patch]
+      :or {patch patch}}]
+  [:form.form
+   {:auto-complete :off
+    :on-submit (fn [e]
+                 (.preventDefault e)
+                 (patch))}
+   [inner-form-component]
+   [patch-submit-component]])
 
 (defn page []
   [:div.user-edit

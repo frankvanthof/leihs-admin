@@ -53,7 +53,5 @@
     [inventory-pool/name-link-component]]
    (if (not @data*)
      [wait-component]
-     [edit-main/edit-form-component (fn [e]
-                                      (.preventDefault e)
-                                      (patch))])
+     [edit-main/edit-form-component :patch patch])
    [edit-core/debug-component]])

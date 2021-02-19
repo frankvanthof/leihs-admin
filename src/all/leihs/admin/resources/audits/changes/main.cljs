@@ -161,9 +161,9 @@
    [routing/hidden-state-component
     {:did-change fetch-changes}]
    [routing/pagination-component]
-   (if-not (contains? @data* @routing/current-url*)
+   (if-not (contains? @data* (:route @routing/state*))
      [wait-component]
-     (if-let [changes (-> @data* (get  @routing/current-url* {}) :changes seq)]
+     (if-let [changes (-> @data* (get (:route @routing/state*) {}) :changes seq)]
        [table-component changes]
        [:div.alert.alert-warning.text-center "No (more) audited-changes found."]))
    [routing/pagination-component]])

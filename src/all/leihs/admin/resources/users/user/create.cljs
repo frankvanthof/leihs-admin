@@ -26,17 +26,18 @@
 
 (defn post [& args]
   (go (when-let
-        [id (some->
-              {:chan (async/chan)
-               :url (path :users)
-               :method :post
-               :json-params  (-> @data*
-                                 (update-in [:extended_info]
-                                            (fn [s] (.parse js/JSON s))))}
-              http-client/request :chan <!
-              http-client/filter-success! :body :id)]
+        [data (some->
+                {:chan (async/chan)
+                 :url (path :users)
+                 :method :post
+                 :json-params  (-> @data*
+                                   (update-in [:extended_info]
+                                              (fn [s] (.parse js/JSON s))))}
+                http-client/request :chan <!
+                http-client/filter-success! :body)]
+        (reset! data* nil)
         (accountant/navigate!
-          (path :user {:user-id id})))))
+          (path :user {:user-id (:id data)})))))
 
 (defn clean [& _]
   (reset! data* {}))

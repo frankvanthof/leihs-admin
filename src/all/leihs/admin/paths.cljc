@@ -48,10 +48,11 @@
   (branch "/users"
           (branch "/"
                   (leaf "" :users)
-                  (leaf "new" :user-create)
-                  (leaf "choose" :users-choose))
+                  (branch "/"
+                          (leaf "new" :user-create)
+                          (leaf "choose" :users-choose)))
           (branch "/"
-                  (param :user-id)
+                  (param [#"[^/]+" :user-id])
                   (leaf "" :user)
                   (leaf "/delete" :user-delete)
                   (leaf "/edit" :user-edit)

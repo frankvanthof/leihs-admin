@@ -8,6 +8,7 @@
     [leihs.admin.common.users-and-groups.core :as users-and-groups]
     [leihs.admin.paths :refer [path]]
     [leihs.admin.resources.users.choose-core :as choose-core]
+    [leihs.admin.resources.users.user.core :refer [sql-merge-unique-user]]
 
     [clojure.set :refer [rename-keys]]
     [clojure.java.jdbc :as jdbc]
@@ -117,15 +118,15 @@
 
 ;;; user ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn user-query [user-id]
+(defn user-query [uid]
   (-> (apply sql/select user-selects)
       (sql/from :users)
-      (sql/merge-where [:= :id user-id])
+      (sql-merge-unique-user uid)
       (sql/merge-where [:= :delegator_user_id nil])))
 
-(defn get-user [{tx :tx {user-id :user-id} :route-params}]
+(defn get-user [{tx :tx {uid :user-id} :route-params}]
   {:body
-   (or (->> (-> user-id user-query sql/format)
+   (or (->> (-> uid user-query sql/format)
             (jdbc/query tx) first)
        (throw (ex-info "User not found" {:status 404})))})
 
@@ -161,10 +162,10 @@
                     (:admin_protected user) (throw-forbidden!)
                     :else :OK)))
 
-(defn delete-user [{tx :tx {user-id :user-id} :route-params :as request}]
+(defn delete-user [{tx :tx :as request}]
   (if-let [user (-> request get-user :body)]
     (do (assert-deletion-permitted! request user)
-        (if (= [1] (jdbc/delete! tx :users ["id = ?" user-id]))
+        (if (= [1] (jdbc/delete! tx :users ["id = ?" (:id user)]))
           {:status 204}
           (throw (ex-info "Deleted failed" {:status 500}))))
     (throw (ex-info "To be deleted user not found." {:status 404}))))
@@ -214,17 +215,18 @@
   (transfer-entitlement-groups tx user-id target-user-id))
 
 (defn transfer-data-and-delete-user
-  [{{user-id :user-id target-user-uid :target-user-uid} :route-params
+  [{{uid :user-id target-user-uid :target-user-uid} :route-params
     tx :tx :as request}]
-  (let [target-user-id (-> target-user-uid (choose-core/find-user-by-some-uid! tx) :id)
-        del-user (->> user-id
+  (let [target-user (-> target-user-uid (choose-core/find-user-by-some-uid! tx))
+        del-user (->> uid
                       user-query
                       sql/format
                       (jdbc/query tx)
                       first)]
     (when-not del-user
       (throw (ex-info "To be deleted user not found." {:status 404})))
-    (transfer-data user-id target-user-id tx)
+    (transfer-data (:id del-user)
+                   (:id target-user) tx)
     (delete-user request)))
 
 
@@ -326,15 +328,15 @@
                        :organization :org_id])))
 
 (defn patch-user
-  ([{tx :tx data :body {user-id :user-id} :route-params :as request}]
-   (patch-user user-id (prepare-write-data data) tx request))
-  ([user-id data tx request]
+  ([{tx :tx data :body :as request}]
+   (patch-user (prepare-write-data data) tx request))
+  ([data tx request]
    (if-let [user (-> request get-user :body)]
      (do (users-and-groups/protect-leihs-core! user)
          (users-and-groups/protect-leihs-core! data)
          (protect-admin-and-system-admin! user request)
          (protect-attribute-de-escalation! user request)
-         (or (= [1] (jdbc/update! tx :users data ["id = ?" user-id]))
+         (or (= [1] (jdbc/update! tx :users data ["id = ?" (:id user)]))
              (throw (ex-info "Number of updated rows does not equal one." {} )))
          (get-user request))
      {:status 404})))

@@ -5,6 +5,7 @@
     [leihs.core.sql :as sql]
 
     [leihs.admin.utils.regex :refer [uuid-pattern]]
+    [leihs.admin.resources.users.user.core :refer [sql-merge-unique-user]]
 
     [clojure.java.jdbc :as jdbc]
 
@@ -17,13 +18,7 @@
   (-> (sql/select :*)
       (sql/from :users)
       (sql/merge-where [:= nil :delegator_user_id])
-      (sql/merge-where
-        [:or
-         (if (clojure.string/includes? unique-id "@" )
-           [:= (sql/call :lower :users.email) (sql/call :lower unique-id)]
-           [:= :users.login unique-id])
-         (when (re-matches uuid-pattern unique-id)
-           [:= :users.id unique-id])])))
+      (sql-merge-unique-user unique-id)))
 
 (defn find-user-by-some-uid! [uid tx]
   (let [user-seq (->> uid

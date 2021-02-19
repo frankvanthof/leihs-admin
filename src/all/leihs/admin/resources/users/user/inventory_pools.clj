@@ -5,6 +5,7 @@
     [leihs.core.sql :as sql]
 
     [leihs.admin.paths :refer [path]]
+    [leihs.admin.resources.users.user.core :refer [sql-merge-unique-user]]
 
     [clojure.set :refer [rename-keys]]
     [clojure.java.jdbc :as jdbc]
@@ -45,12 +46,12 @@
       (sql/merge-where [:in :reservations.status stati])))
 
 
-(defn user-inventory-pools-query [user-id]
+(defn user-inventory-pools-query [uid]
   (-> (sql/select :access_rights.role
                   [:inventory_pools.name :inventory_pool_name]
                   [:inventory_pools.id :inventory_pool_id])
       (sql/from :users)
-      (sql/merge-where [:= :users.id user-id])
+      (sql-merge-unique-user uid)
       (sql/merge-join :access_rights [:= :users.id :access_rights.user_id])
       (sql/merge-join :inventory_pools [:= :access_rights.inventory_pool_id :inventory_pools.id])
       (sql/merge-select [open-contracts-count :open_contracts_count])
@@ -61,17 +62,16 @@
       sql/format
       ))
 
-(defn inventory-pools [user-id tx]
-  (->> user-id
+(defn inventory-pools [uid tx]
+  (->> uid
        user-inventory-pools-query
        (jdbc/query tx)))
 
 (defn user-inventory-pools
-  [{tx :tx data :body {user-id :user-id} :route-params}]
+  [{tx :tx data :body {uid :user-id} :route-params}]
   {:body
    {:user-inventory-pools
-    (inventory-pools user-id tx)
-    }})
+    (inventory-pools uid tx)}})
 
 
 ;;; create user ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

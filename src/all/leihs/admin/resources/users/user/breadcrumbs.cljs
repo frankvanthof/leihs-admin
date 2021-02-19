@@ -63,11 +63,11 @@
   [li :user [:span icons/user " User "] {:user-id @user-id*} {}
    :authorizers [auth/admin-scopes? pool-auth/some-lending-manager?]])
 
-(defn user-my-li []
+(defn user-my-li [user-id]
   [li :my-user [:span icons/user
                 " User-Home in leihs/my
                 " [:i.fas.fa-external-link-alt]]
-   {:user-id @user-id*} {}
+   {:user-id user-id} {}
    :authorizers [auth/admin-scopes? pool-auth/some-lending-manager?]])
 
 (defonce left*
